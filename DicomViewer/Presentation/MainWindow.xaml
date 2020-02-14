@@ -1,0 +1,89 @@
+﻿<Controls:MetroWindow x:Class="DicomViewer.Presentation.MainWindow"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DicomViewer.Presentation"
+        xmlns:viewing="clr-namespace:Viewing;assembly=Viewing"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Background="#444444"
+        TitleCharacterCasing="Normal"
+        Title="Dicom Viewer" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance local:MainViewModel}">
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.7*" />
+                <ColumnDefinition Width="0.3*" />
+            </Grid.ColumnDefinitions>
+            
+            <viewing:Viewport 
+                Visuals="{Binding Visuals}" 
+                Camera="{Binding Camera}" 
+                InteractorLeft="{Binding InteractorLeft}"
+                InteractorRight="{Binding InteractorRight}"
+            />
+            
+            <UniformGrid Columns="1" Rows="3" Grid.Column="1">
+                <viewing:Viewport 
+                    Visuals="{Binding Visuals}" 
+                    Camera="{Binding Camera}" 
+                    InteractorLeft="{Binding InteractorLeft}"
+                    InteractorRight="{Binding InteractorRight}"
+                />
+                <viewing:Viewport 
+                    Visuals="{Binding Visuals}" 
+                    Camera="{Binding Camera}" 
+                    InteractorLeft="{Binding InteractorLeft}"
+                    InteractorRight="{Binding InteractorRight}"
+                />
+                <viewing:Viewport 
+                    Visuals="{Binding Visuals}" 
+                    Camera="{Binding Camera}" 
+                    InteractorLeft="{Binding InteractorLeft}"
+                    InteractorRight="{Binding InteractorRight}"
+                />
+            </UniformGrid>
+        </Grid>
+
+        <DockPanel Opacity="0.8" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="12,12,12,0">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                <Button Width="48" Height="48" Command="{Binding LoadDatasetCommand}" ToolTip="Opens a DICOM folder">
+                    <iconPacks:PackIconMaterialDesign Kind="FolderOpen" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+                <Button Width="48" Height="48"  Command="{Binding LoadFileCommand}" ToolTip="Opens a DICOM file">
+                    <iconPacks:PackIconMaterialDesign Kind="InsertDriveFile" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+            </StackPanel>
+
+            <StackPanel Margin="0,48,0,0" Orientation="Vertical" DockPanel.Dock="Left" HorizontalAlignment="Left">
+                <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the 3D rotation tool" IsChecked="{Binding Tools.IsRotateActive}">
+                    <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </ToggleButton>
+                <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the zoom tool" IsChecked="{Binding Tools.IsZoomActive}">
+                    <iconPacks:PackIconMaterialDesign Kind="ZoomIn" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </ToggleButton>
+                <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the pan tool" IsChecked="{Binding Tools.IsPanActive}">
+                    <iconPacks:PackIconMaterialDesign Kind="PanTool" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </ToggleButton>
+                <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the windowing tool" IsChecked="{Binding Tools.IsWindowingActive}">
+                    <iconPacks:PackIconMaterialDesign Kind="Opacity" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </ToggleButton>
+            </StackPanel>
+        </DockPanel>
+
+        <Grid Margin="12" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <TextBlock TextAlignment="Center" IsHitTestVisible="False">
+                <iconPacks:PackIconMaterialDesign Kind="PermIdentity" />
+                <Run FontSize="16" Text="{Binding Patient.FullReadableName, Mode=OneWay}" />
+                <LineBreak/>
+                <Run FontSize="14" Text="{Binding Patient.Id, Mode=OneWay}" />
+            </TextBlock>
+        </Grid>
+    </Grid>
+</Controls:MetroWindow>

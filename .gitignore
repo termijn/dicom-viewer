@@ -1,0 +1,17 @@
+# Ignore Generated files
+/Output/
+/Build/
+obj/
+packages/
+
+# Ignore thumbnails created by windows
+Thumbs.db
+
+# Ignore files build by Visual Studio
+*.VC.*
+*.user
+*.suo
+*.bak
+*.nupkg
+/.vs/
+x64
