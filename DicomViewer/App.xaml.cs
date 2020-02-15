@@ -1,10 +1,13 @@
-﻿using Dicom.Log;
+﻿using Dicom.Imaging;
+using Dicom.Log;
 using DicomViewer.DotNetExtensions;
 using DicomViewer.IO;
 using DicomViewer.Presentation;
 using DicomViewer.Properties;
+using Entities;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
+using System.Linq;
 using System.Windows;
 
 namespace DicomViewer
@@ -21,6 +24,7 @@ namespace DicomViewer
         protected override void OnStartup(StartupEventArgs e)
         {
             LogManager.SetImplementation(ConsoleLogManager.Instance);
+            ImageManager.SetImplementation(WPFImageManager.Instance);
         }
         protected override void OnActivated(EventArgs e)
         {
@@ -28,6 +32,16 @@ namespace DicomViewer
             _viewModel = (MainViewModel)MainWindow.DataContext;
             _viewModel.LoadDatasetCommand = new BindableCommand(LoadFolder);
             _viewModel.LoadFileCommand = new BindableCommand(LoadFile);
+            new PropertySubscription(() => _viewModel.SelectedSeries, () => 
+            {
+                DisposeScan();
+                if (_viewModel.SelectedSeries == null) return;
+
+                var loader = new DicomVolumeLoader();
+                _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);                
+                _presenter = new ScanPresenter3D(_viewModel);
+                _presenter.Present(_scan);
+            });
         }
 
         private void LoadFile()
@@ -70,10 +84,11 @@ namespace DicomViewer
 
                 DisposeScan();
 
-                _scan = loader.Load(dialog.FileName);
+                var seriesExtractor = new DicomSeriesExtractor();
+                var series = seriesExtractor.ExtractSeries(dialog.FileName);
 
-                _presenter = new ScanPresenter3D(_viewModel);
-                _presenter.Present(_scan);
+                _viewModel.Series = series;
+                _viewModel.SelectedSeries = series.First();
 
                 Settings.Default.LastUsedFolder = dialog.FileName;
                 Settings.Default.Save();

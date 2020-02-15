@@ -149,6 +149,7 @@
     <Compile Include="IO\DicomSopClasses.cs" />
     <Compile Include="IO\Scan2D.cs" />
     <Compile Include="IO\Scan3D.cs" />
+    <Compile Include="Presentation\ComboBoxItemTemplateSelector.cs" />
     <Compile Include="Presentation\ScanPresenter3D.cs" />
     <Compile Include="Presentation\ToolSelectorViewModel.cs" />
     <Page Include="Presentation\MainWindow.xaml">

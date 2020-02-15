@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DicomViewer.Presentation"
         xmlns:viewing="clr-namespace:Viewing;assembly=Viewing"
+        xmlns:entities="clr-namespace:Entities;assembly=Entities"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Background="#444444"
@@ -58,5 +59,47 @@
                 <Run FontSize="14" Text="{Binding Patient.Id, Mode=OneWay}" />
             </TextBlock>
         </Grid>
+
+        <ComboBox 
+            Width="150" 
+            Margin="12"
+            Height="48"
+            ItemsSource="{Binding Series}" 
+            SelectedItem="{Binding SelectedSeries}"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top">
+            <ComboBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" MaxWidth="660" />
+                </ItemsPanelTemplate>
+            </ComboBox.ItemsPanel>
+            <ComboBox.ItemTemplateSelector>
+                <local:ComboBoxItemTemplateSelector>
+                    <local:ComboBoxItemTemplateSelector.ItemTemplate>
+                        <DataTemplate DataType="{x:Type entities:Series}">
+                            <DockPanel LastChildFill="True" Margin="4">
+                                <TextBlock DockPanel.Dock="Top">
+                                    <Run>Series</Run>
+                                    <Run Text="{Binding Number}" />
+                                    <LineBreak/>                                    
+                                    <Run Text="{Binding NumberOfImages}" />
+                                    <Run>Images</Run>
+                                </TextBlock>
+                                <Image Margin="0,4,0,0" Width="100" Height="100" Stretch="Fill" Source="{Binding Thumbnail}"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </local:ComboBoxItemTemplateSelector.ItemTemplate>
+                    <local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                        <DataTemplate DataType="{x:Type entities:Series}">
+                            <DockPanel LastChildFill="True">
+                                <TextBlock DockPanel.Dock="Left" FontSize="16">
+                                            <Run>Series</Run> <Run Text="{Binding Number}" />
+                                </TextBlock>
+                            </DockPanel>
+                        </DataTemplate>
+                    </local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                </local:ComboBoxItemTemplateSelector>
+            </ComboBox.ItemTemplateSelector>
+        </ComboBox>
     </Grid>
 </Controls:MetroWindow>

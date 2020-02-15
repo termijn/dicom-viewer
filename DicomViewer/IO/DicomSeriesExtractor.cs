@@ -1,30 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Dicom;
+using Dicom.Imaging;
 using Entities;
 
 namespace DicomViewer.IO
 {
     public class DicomSeriesExtractor
     {
-        private List<DicomSeries3D> _series3D;
+        private readonly List<DicomSeries> _series = new List<DicomSeries>();
 
         public DicomSeriesExtractor()
         {
 
         }
 
-        public IEnumerable<Series3D> ExtractSeries3D(string path)
+        public IEnumerable<Series> ExtractSeries(string path)
         {
             var files = Directory.EnumerateFiles(path);
             var dicomFiles = files.Where(file => DicomFile.HasValidHeader(file));
             foreach(var file in dicomFiles)
             {
-                ProcessFile(DicomFile.Open(file, FileReadOption.ReadLargeOnDemand));
+                var dicomFile = DicomFile.Open(file, FileReadOption.ReadLargeOnDemand);
+                ProcessFile(dicomFile);
             }
-            return _series3D;
+
+            foreach(var series in _series)
+            {
+                var dicomPixelData = DicomPixelData.Create(series.Files.First().Dataset);
+                var nrFrames = dicomPixelData.NumberOfFrames;
+                if (nrFrames > 1)
+                {
+                    series.NumberOfImages = nrFrames;
+                }
+                else
+                {
+                    series.NumberOfImages = series.Files.Count;
+                }                
+                series.Is3D = Is3DCapableSopClass(series.Files.First()) && (series.Files.Count > 1 || nrFrames > 1);
+                
+                for (int i = series.Files.Count / 2; i >= 0; i--)
+                {
+                    var middleFile = series.Files[i];
+                    if (middleFile.Dataset.Contains(DicomTag.PixelData))
+                    {
+                        DicomImage image = new DicomImage(middleFile.Dataset);
+                        var renderedImage = image.RenderImage();
+                        series.Thumbnail = renderedImage.AsWriteableBitmap();
+                        break;
+                    }
+                }                
+            }
+            return _series;
         }
 
         public void ProcessFile(DicomFile file)
@@ -32,43 +60,57 @@ namespace DicomViewer.IO
             string seriesInstanceUid = file.Dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty);
             if (string.IsNullOrEmpty(seriesInstanceUid)) return;
 
-            if (Is3D(file))
-            {
-                CreateSeries3D(file, seriesInstanceUid);
-            }
-            else
-            {
-
-            }
+            CreateSeries(file, seriesInstanceUid);
         }
 
-        private void CreateSeries3D(DicomFile file, string seriesInstanceUid)
+        private void CreateSeries(DicomFile file, string seriesInstanceUid) 
         {
-            var series = _series3D.FirstOrDefault(s => s.SeriesInstanceUid == seriesInstanceUid);
+            var containsPixelData = file.Dataset.Contains(DicomTag.PixelData);
+            if (!IsSupportedSopClass(file) || !containsPixelData)
+            {
+                return;
+            }
+
+            var series = _series.FirstOrDefault(s => s.SeriesInstanceUid == seriesInstanceUid);
             if (series == null)
             {
-                series = new DicomSeries3D
+                var sopclass = file.Dataset.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
+                var seriesNumber = file.Dataset.GetValueOrDefault(DicomTag.SeriesNumber, 0, string.Empty);
+                
+                series = new DicomSeries
                 {
                     SeriesInstanceUid = seriesInstanceUid,
+                    SopClassUid = sopclass,
+                    Number = seriesNumber   
                 };
-                _series3D.Add(series);
+                _series.Add(series);
             }
             series.Files.Add(file);
         }
 
-        public bool Is3D(DicomFile file)
+        public bool IsSupportedSopClass(DicomFile file)
+        {
+            var sopclass = file.Dataset.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
+            return
+                sopclass == DicomSopClasses.CTImageStorageSopClass ||
+                sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass ||
+                sopclass == DicomSopClasses.MRImageStorageSopClass ||
+                sopclass == DicomSopClasses.XA3DImageStorageSopClass;
+        }
+
+        public bool Is3DCapableSopClass(DicomFile file)
         {
             var sopclass = file.Dataset.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
 
             bool mr3d = 
                 sopclass == DicomSopClasses.MRImageStorageSopClass || 
                 sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass;
-            var isVolumetric = file.Dataset.GetValueOrDefault(DicomTag.VolumetricProperties, 0, string.Empty) == "VOLUME";
+            //var isVolumetric = file.Dataset.GetValueOrDefault(DicomTag.VolumetricProperties, 0, string.Empty) == "VOLUME";
 
             return
                 sopclass == DicomSopClasses.XA3DImageStorageSopClass ||
                 sopclass == DicomSopClasses.CTImageStorageSopClass ||
-                (mr3d && isVolumetric);
+                (mr3d);
         }
     }
 }

@@ -46,6 +46,21 @@ namespace DicomViewer.IO
             return null;
         }
 
+        public Scan3D Load(DicomSeries series)
+        {
+            if (!series.Is3D) return null;
+            
+            if (series.Files.Count == 1)
+            {
+                return Load(series.Files.First());
+            }
+            else if (series.Files.Count > 1)
+            {
+                return Load(series.Files);
+            }
+            return null;
+        }
+
         private Scan3D LoadXA3DImageStorage(DicomFile dicomFile)
         {
             var volume = new VolumeData();

@@ -1,6 +1,7 @@
 ﻿using DicomViewer.DotNetExtensions;
 using Entities;
 using RenderEngine;
+using System.Collections.Generic;
 using Viewing;
 
 namespace DicomViewer.Presentation
@@ -12,11 +13,15 @@ namespace DicomViewer.Presentation
         private IMouseInteractor _interactorLeft;
         private IMouseInteractor _interactorRight;
         private BindableCommand _loadFileCommand;
+        private IEnumerable<Series> _series;
+        private Series _selectedSeries;
 
         public MainViewModel()
         {
             Tools = new ToolSelectorViewModel(this);
         }
+
+        public IEnumerable<Series> Series { get => _series; set => SetProperty(ref _series, value); }
 
         public Patient Patient
         {
@@ -25,6 +30,8 @@ namespace DicomViewer.Presentation
         }
 
         public VolumeVisual VolumeVisual { get; set; }
+
+        public Series SelectedSeries { get => _selectedSeries; set => SetProperty(ref _selectedSeries, value); }
 
         public Camera Camera { get; } = new Camera();
 
