@@ -17,7 +17,7 @@ namespace DicomViewer.IO
         private const string EnhancedMRImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.4.1";
         private const string XA3DImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.13.1.1";
 
-        public Scan Load(string path)
+        public Scan3D Load(string path)
         {
             if (Directory.Exists(path))
             {
@@ -46,7 +46,7 @@ namespace DicomViewer.IO
             return null;
         }
 
-        private Scan LoadXA3DImageStorage(DicomFile dicomFile)
+        private Scan3D LoadXA3DImageStorage(DicomFile dicomFile)
         {
             var volume = new VolumeData();
             var dataSet = dicomFile.Dataset;
@@ -142,10 +142,10 @@ namespace DicomViewer.IO
 
             var patient = GetPatient(dataSet);
 
-            return new Scan { Volume = volume, Patient = patient };
+            return new Scan3D { Volume = volume, Patient = patient };
         }
 
-        private Scan Load(DicomFile dicomFile)
+        private Scan3D Load(DicomFile dicomFile)
         {
             var file = dicomFile.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
             var dataSet = file.Dataset;
@@ -162,7 +162,7 @@ namespace DicomViewer.IO
             return null;
         }
 
-        private Scan LoadEnhancedMRImage(DicomFile dicomFile)
+        private Scan3D LoadEnhancedMRImage(DicomFile dicomFile)
         {
             var volume = new VolumeData();
             var dataSet = dicomFile.Dataset;
@@ -258,10 +258,10 @@ namespace DicomViewer.IO
 
             var patient = GetPatient(dataSet);
 
-            return new Scan { Volume = volume, Patient = patient };
+            return new Scan3D { Volume = volume, Patient = patient };
         }
 
-        private Scan Load(List<DicomFile> files)
+        private Scan3D Load(List<DicomFile> files)
         {
             if (files.Count < 2) return null;
 
@@ -359,7 +359,7 @@ namespace DicomViewer.IO
 
             var patient = GetPatient(files.First().Dataset);
 
-            return new Scan { Volume = volume, Patient = patient };
+            return new Scan3D { Volume = volume, Patient = patient };
         }
 
         private Patient GetPatient(DicomDataset dataSet)

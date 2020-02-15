@@ -53,6 +53,7 @@
     <Compile Include="Patient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertySubscription.cs" />
+    <Compile Include="Series.cs" />
     <Compile Include="SlicePositionComparer.cs" />
     <Compile Include="Spacing2.cs" />
     <Compile Include="Spacing3.cs" />

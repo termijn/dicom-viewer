@@ -15,7 +15,7 @@ namespace DicomViewer
     public partial class App : Application
     {
         private MainViewModel _viewModel;
-        private Scan _scan;
+        private Scan3D _scan;
         private ScanPresenter3D _presenter;
 
         protected override void OnStartup(StartupEventArgs e)

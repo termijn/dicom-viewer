@@ -144,7 +144,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="IO\Scan.cs" />
+    <Compile Include="IO\DicomSeries.cs" />
+    <Compile Include="IO\DicomSeriesExtractor.cs" />
+    <Compile Include="IO\DicomSopClasses.cs" />
+    <Compile Include="IO\Scan2D.cs" />
+    <Compile Include="IO\Scan3D.cs" />
     <Compile Include="Presentation\ScanPresenter3D.cs" />
     <Compile Include="Presentation\ToolSelectorViewModel.cs" />
     <Page Include="Presentation\MainWindow.xaml">

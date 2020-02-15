@@ -16,41 +16,14 @@
         <local:MainViewModel />
     </Window.DataContext>
     <Grid>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.7*" />
-                <ColumnDefinition Width="0.3*" />
-            </Grid.ColumnDefinitions>
             
-            <viewing:Viewport 
-                Visuals="{Binding Visuals}" 
-                Camera="{Binding Camera}" 
-                InteractorLeft="{Binding InteractorLeft}"
-                InteractorRight="{Binding InteractorRight}"
-            />
+        <viewing:Viewport 
+            Visuals="{Binding Visuals}" 
+            Camera="{Binding Camera}" 
+            InteractorLeft="{Binding InteractorLeft}"
+            InteractorRight="{Binding InteractorRight}"
+        />
             
-            <UniformGrid Columns="1" Rows="3" Grid.Column="1">
-                <viewing:Viewport 
-                    Visuals="{Binding Visuals}" 
-                    Camera="{Binding Camera}" 
-                    InteractorLeft="{Binding InteractorLeft}"
-                    InteractorRight="{Binding InteractorRight}"
-                />
-                <viewing:Viewport 
-                    Visuals="{Binding Visuals}" 
-                    Camera="{Binding Camera}" 
-                    InteractorLeft="{Binding InteractorLeft}"
-                    InteractorRight="{Binding InteractorRight}"
-                />
-                <viewing:Viewport 
-                    Visuals="{Binding Visuals}" 
-                    Camera="{Binding Camera}" 
-                    InteractorLeft="{Binding InteractorLeft}"
-                    InteractorRight="{Binding InteractorRight}"
-                />
-            </UniformGrid>
-        </Grid>
-
         <DockPanel Opacity="0.8" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="12,12,12,0">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                 <Button Width="48" Height="48" Command="{Binding LoadDatasetCommand}" ToolTip="Opens a DICOM folder">
