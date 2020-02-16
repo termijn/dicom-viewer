@@ -6,9 +6,11 @@ using DicomViewer.Presentation;
 using DicomViewer.Properties;
 using Entities;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using RenderEngine;
 using System;
 using System.Linq;
 using System.Windows;
+using Viewing;
 
 namespace DicomViewer
 {
@@ -38,9 +40,16 @@ namespace DicomViewer
                 if (_viewModel.SelectedSeries == null) return;
 
                 var loader = new DicomVolumeLoader();
-                _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);                
-                _presenter = new ScanPresenter3D(_viewModel);
-                _presenter.Present(_scan);
+                var dicomSeries = _viewModel.SelectedSeries as DicomSeries;
+                //dicomSeries.OpenFiles();
+                _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);
+                //_presenter = new ScanPresenter3D(_viewModel);
+                //_presenter.Present(_scan);
+
+                _viewModel.Visuals.Clear();
+                var visual = new ImageVisual(_scan.Volume.Slices);
+                _viewModel.Visuals.Add(visual);
+                _viewModel.InteractorLeft = new ImageScrollInteractor(visual);
             });
         }
 

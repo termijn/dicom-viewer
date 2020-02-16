@@ -28,7 +28,9 @@ namespace DicomViewer.IO
 
             foreach(var series in _series)
             {
-                var dicomPixelData = DicomPixelData.Create(series.Files.First().Dataset);
+                var firstFile = series.Files.First();
+
+                var dicomPixelData = DicomPixelData.Create(firstFile.Dataset);
                 var nrFrames = dicomPixelData.NumberOfFrames;
                 if (nrFrames > 1)
                 {
@@ -38,7 +40,7 @@ namespace DicomViewer.IO
                 {
                     series.NumberOfImages = series.Files.Count;
                 }                
-                series.Is3D = Is3DCapableSopClass(series.Files.First()) && (series.Files.Count > 1 || nrFrames > 1);
+                series.Is3D = Is3DCapableSopClass(firstFile) && (series.FileNames.Count > 1 || nrFrames > 1);
                 
                 for (int i = series.Files.Count / 2; i >= 0; i--)
                 {
@@ -64,9 +66,8 @@ namespace DicomViewer.IO
         }
 
         private void CreateSeries(DicomFile file, string seriesInstanceUid) 
-        {
-            var containsPixelData = file.Dataset.Contains(DicomTag.PixelData);
-            if (!IsSupportedSopClass(file) || !containsPixelData)
+        {            
+            if (!IsSupportedSopClass(file))
             {
                 return;
             }
@@ -85,6 +86,7 @@ namespace DicomViewer.IO
                 };
                 _series.Add(series);
             }
+            series.FileNames.Add(file.File.Name);
             series.Files.Add(file);
         }
 

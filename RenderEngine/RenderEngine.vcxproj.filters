@@ -33,6 +33,12 @@
     <ClCompile Include="IVisual.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vtkMemoryImageReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageVisual.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ViewportRenderer.h">
@@ -48,6 +54,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IVisual.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vtkMemoryImageReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageVisual.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

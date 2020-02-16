@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="ImageScrollInteractor.cs" />
     <Compile Include="IMouseInteractor.cs" />
     <Compile Include="PanCameraInteractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

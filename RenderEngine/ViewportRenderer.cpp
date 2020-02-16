@@ -72,7 +72,7 @@ public:
 	}
 
 	void Render(byte* pixelData)
-	{
+	{		
 		renderWindow->Render();
 
 		windowToImageFilter->Modified();
