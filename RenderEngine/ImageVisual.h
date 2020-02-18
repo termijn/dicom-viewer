@@ -2,8 +2,8 @@
 
 #include "IVisual.h"
 
-#include <vtkActor2D.h>
-#include <vtkImageMapper.h>
+#include <vtkImageSliceMapper.h>
+#include <vtkImageSlice.h>
 
 namespace RenderEngine
 {
@@ -20,8 +20,9 @@ namespace RenderEngine
 		void SetImageIndex(int index);
 
 	private:
-		vtkActor2D* image;
-		vtkImageMapper* mapper;
+		vtkImageSliceMapper* mapper;
+		vtkImageSlice* image;
+		vtkRenderer* renderer;
 
 		int numberOfImages;
 		int currentImageIndex;

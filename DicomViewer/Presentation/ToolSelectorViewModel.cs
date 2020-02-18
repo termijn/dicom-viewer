@@ -5,15 +5,15 @@ namespace DicomViewer.Presentation
 {
     public class ToolSelectorViewModel: Bindable
     {
-        private readonly MainViewModel mainViewModel;
+        private readonly VolumeViewerViewModel volumeViewer;
         private bool _isZoomActive;
         private bool _isRotateActive = true;
         private bool _isPanActive;
         private bool _isWindowingActive;
 
-        public ToolSelectorViewModel(MainViewModel mainViewModel)
+        public ToolSelectorViewModel(VolumeViewerViewModel volumeViewer)
         {
-            this.mainViewModel = mainViewModel;
+            this.volumeViewer = volumeViewer;
         }
 
         public bool IsZoomActive
@@ -27,7 +27,7 @@ namespace DicomViewer.Presentation
                     _isRotateActive = false;
                     _isPanActive = false;
                     _isWindowingActive = false;
-                    mainViewModel.InteractorLeft = new ZoomInteractor(mainViewModel.Camera);
+                    volumeViewer.InteractorLeft = new ZoomInteractor(volumeViewer.Camera);
                 }
                 RaiseAllPropertiesChangedEvent();
             }
@@ -43,7 +43,7 @@ namespace DicomViewer.Presentation
                     _isRotateActive = true;
                     _isPanActive = false;
                     _isWindowingActive = false;
-                    mainViewModel.InteractorLeft = new RotateCameraInteractor(mainViewModel.Camera);
+                    volumeViewer.InteractorLeft = new RotateCameraInteractor(volumeViewer.Camera);
                 }
                 RaiseAllPropertiesChangedEvent();
             }
@@ -60,7 +60,7 @@ namespace DicomViewer.Presentation
                     _isRotateActive = false;
                     _isPanActive = true;
                     _isWindowingActive = false;
-                    mainViewModel.InteractorLeft = new PanCameraInteractor(mainViewModel.Camera);
+                    volumeViewer.InteractorLeft = new PanCameraInteractor(volumeViewer.Camera);
                 }
                 RaiseAllPropertiesChangedEvent();
             }
@@ -77,7 +77,7 @@ namespace DicomViewer.Presentation
                     _isRotateActive = false;
                     _isPanActive = false;
                     _isWindowingActive = false;
-                    mainViewModel.InteractorLeft = new WindowingInteractor { VolumeVisual = mainViewModel.VolumeVisual };
+                    volumeViewer.InteractorLeft = new WindowingInteractor { VolumeVisual = volumeViewer.VolumeVisual };
                 }
                 RaiseAllPropertiesChangedEvent();
             }

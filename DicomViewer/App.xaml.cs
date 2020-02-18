@@ -32,8 +32,10 @@ namespace DicomViewer
         {
             if (_viewModel != null) return;
             _viewModel = (MainViewModel)MainWindow.DataContext;
+
             _viewModel.LoadDatasetCommand = new BindableCommand(LoadFolder);
             _viewModel.LoadFileCommand = new BindableCommand(LoadFile);
+
             new PropertySubscription(() => _viewModel.SelectedSeries, () => 
             {
                 DisposeScan();
@@ -41,15 +43,14 @@ namespace DicomViewer
 
                 var loader = new DicomVolumeLoader();
                 var dicomSeries = _viewModel.SelectedSeries as DicomSeries;
-                //dicomSeries.OpenFiles();
                 _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);
-                //_presenter = new ScanPresenter3D(_viewModel);
-                //_presenter.Present(_scan);
+                _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
+                _presenter.Present(_scan);
 
-                _viewModel.Visuals.Clear();
+                _viewModel.ImageViewer.Visuals.Clear();
                 var visual = new ImageVisual(_scan.Volume.Slices);
-                _viewModel.Visuals.Add(visual);
-                _viewModel.InteractorLeft = new ImageScrollInteractor(visual);
+                _viewModel.ImageViewer.Visuals.Add(visual);
+                _viewModel.ImageViewer.InteractorLeft = new ImageScrollInteractor(visual);
             });
         }
 
@@ -71,7 +72,7 @@ namespace DicomViewer
 
                 if (_scan == null) return;
 
-                _presenter = new ScanPresenter3D(_viewModel);
+                _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
                 _presenter.Present(_scan);
 
                 Settings.Default.LastUsedFolder = dialog.FileName;

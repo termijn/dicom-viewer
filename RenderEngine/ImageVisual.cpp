@@ -2,8 +2,9 @@
 
 #include <vtkRenderWindow.h>
 #include <vtkWindowToImageFilter.h>
-#include <vtkImageMapper.h>
-#include <vtkActor2D.h>
+#include <vtkImageMapper3D.h>
+#include <vtkImageActor.h>
+#include <vtkImageProperty.h>
 #include "vtkMemoryImageReader.h"
 
 RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageData^>^ images)
@@ -24,19 +25,26 @@ RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageD
 	reader->SetImages(pixels, width, height, images->Count);
 	reader->Update();
 
-	mapper = vtkImageMapper::New();
+
+	image = vtkImageSlice::New();
+	mapper = vtkImageSliceMapper::New();
+
 	mapper->SetInputData(reader->GetOutput());
-	mapper->SetColorWindow(1000);
-	mapper->SetColorLevel(500);
-	currentImageIndex = (images->Count - 1) / 2;
-	mapper->SetZSlice(currentImageIndex);
-	image = vtkActor2D::New();
 	image->SetMapper(mapper);
+
+	vtkImageProperty* imageProperty = vtkImageProperty::New();
+	imageProperty->SetColorWindow(65000);
+	imageProperty->SetColorLevel(32000);
+	image->SetProperty(imageProperty);
+	currentImageIndex = (images->Count - 1) / 2;
+	mapper->SetSliceNumber(currentImageIndex);
 }
 
 void RenderEngine::ImageVisual::AddTo(ViewportRenderer ^ viewport)
 {
-	viewport->GetRenderer()->AddActor2D(image);
+	renderer = viewport->GetRenderer();
+	viewport->GetRenderer()->AddActor(image);
+	viewport->GetRenderer()->ResetCamera();
 }
 
 void RenderEngine::ImageVisual::RemoveFrom(ViewportRenderer ^ viewport)
@@ -57,5 +65,5 @@ int RenderEngine::ImageVisual::GetNumberOfImages()
 void RenderEngine::ImageVisual::SetImageIndex(int index)
 {
 	currentImageIndex = index;
-	mapper->SetZSlice(index);
+	mapper->SetSliceNumber(currentImageIndex);
 }

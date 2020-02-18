@@ -150,8 +150,16 @@
     <Compile Include="IO\Scan2D.cs" />
     <Compile Include="IO\Scan3D.cs" />
     <Compile Include="Presentation\ComboBoxItemTemplateSelector.cs" />
+    <Compile Include="Presentation\ImageViewerViewModel.cs" />
+    <Compile Include="Presentation\ImageViewer.xaml.cs">
+      <DependentUpon>ImageViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Presentation\ScanPresenter3D.cs" />
     <Compile Include="Presentation\ToolSelectorViewModel.cs" />
+    <Page Include="Presentation\ImageViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Presentation\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -167,8 +175,16 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Presentation\VolumeViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Presentation\VolumeViewer.xaml.cs">
+      <DependentUpon>VolumeViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\VolumeViewerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

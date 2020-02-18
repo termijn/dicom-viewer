@@ -2,7 +2,6 @@
 using Entities;
 using RenderEngine;
 using System.Collections.Generic;
-using Viewing;
 
 namespace DicomViewer.Presentation
 {
@@ -10,17 +9,26 @@ namespace DicomViewer.Presentation
     {
         private Patient _patient;
         private BindableCommand _loadDatasetCommand;
-        private IMouseInteractor _interactorLeft;
-        private IMouseInteractor _interactorRight;
         private BindableCommand _loadFileCommand;
         private IEnumerable<Series> _series;
         private Series _selectedSeries;
+        private object _currentViewer;
+        private BindableCommand _switchTo2DCommand;
+        private BindableCommand _switchTo3DCommand;
 
         public MainViewModel()
         {
-            Tools = new ToolSelectorViewModel(this);
+            SwitchTo2DCommand = new BindableCommand(SwitchTo2D);
+            SwitchTo3DCommand = new BindableCommand(SwitchTo3D);
+
+            VolumeViewer = new VolumeViewerViewModel();
+            ImageViewer = new ImageViewerViewModel();
+            CurrentViewer = VolumeViewer;
         }
 
+        public VolumeViewerViewModel VolumeViewer { get; }
+        public ImageViewerViewModel ImageViewer { get; }
+        
         public IEnumerable<Series> Series { get => _series; set => SetProperty(ref _series, value); }
 
         public Patient Patient
@@ -29,20 +37,27 @@ namespace DicomViewer.Presentation
             set => SetProperty(ref _patient, value);
         }
 
-        public VolumeVisual VolumeVisual { get; set; }
+        public object CurrentViewer
+        {
+            get => _currentViewer; set => SetProperty(ref _currentViewer, value);
+        }
 
         public Series SelectedSeries { get => _selectedSeries; set => SetProperty(ref _selectedSeries, value); }
-
-        public Camera Camera { get; } = new Camera();
-
-        public IMouseInteractor InteractorLeft { get => _interactorLeft; set => SetProperty(ref _interactorLeft, value); }
-        public IMouseInteractor InteractorRight { get => _interactorRight; set => SetProperty(ref _interactorRight, value); }
-
-        public VisualsCollection Visuals { get; } = new VisualsCollection();
 
         public BindableCommand LoadDatasetCommand { get => _loadDatasetCommand; set => SetProperty(ref _loadDatasetCommand, value); }
         public BindableCommand LoadFileCommand { get => _loadFileCommand; set => SetProperty(ref _loadFileCommand, value); }
 
-        public ToolSelectorViewModel Tools { get; }
+        public BindableCommand SwitchTo2DCommand { get => _switchTo2DCommand; set => SetProperty(ref _switchTo2DCommand, value); }
+        public BindableCommand SwitchTo3DCommand { get => _switchTo3DCommand; set => SetProperty(ref _switchTo3DCommand, value); }
+        
+        private void SwitchTo3D()
+        {
+            CurrentViewer = VolumeViewer;
+        }
+
+        private void SwitchTo2D()
+        {
+            CurrentViewer = ImageViewer;
+        }
     }
 }

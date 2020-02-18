@@ -13,7 +13,7 @@ namespace Viewing
     public class Viewport: ContentControl
     {
         public static DependencyProperty VisualsProperty = 
-            DependencyProperty.Register("Visuals", typeof(VisualsCollection), typeof(Viewport), new PropertyMetadata(OnVisualsChanged));
+            DependencyProperty.Register("Visuals", typeof(VisualsCollection), typeof(Viewport), new PropertyMetadata(new VisualsCollection(), OnVisualsChanged));
         public static DependencyProperty CameraProperty =
             DependencyProperty.Register("Camera", typeof(Camera), typeof(Viewport), new PropertyMetadata(new Camera(),  OnCameraChanged));
         public static DependencyProperty InteractorLeftProperty =
