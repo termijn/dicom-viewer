@@ -18,7 +18,7 @@ vtkStandardNewMacro(vtkMemoryImageReader);
 
 vtkMemoryImageReader::vtkMemoryImageReader()
 {
-	this->SetNumberOfInputPorts(0);
+    this->SetNumberOfInputPorts(0);
 }
 
 
@@ -26,45 +26,73 @@ vtkMemoryImageReader::~vtkMemoryImageReader()
 {
 }
 
-void vtkMemoryImageReader::SetImages(void ** images, int width, int height, int numberOfImages)
+void vtkMemoryImageReader::SetImages(
+    void ** images,
+    int width,
+    int height,
+    int numberOfImages,
+    double rescaleIntercept,
+    double rescaleSlope,
+    double pixelSpacingX,
+    double pixelSpacingY)
 {
-	this->images = images;
-	this->width = width;
-	this->height = height;
-	this->numberOfImages = numberOfImages;
+    this->images = images;
+    this->width = width;
+    this->height = height;
+    this->numberOfImages = numberOfImages;
+    this->rescaleIntercept = rescaleIntercept;
+    this->rescaleSlope = rescaleSlope;
+    this->pixelSpacingX = pixelSpacingX;
+    this->pixelSpacingY = pixelSpacingY;
 }
 
 int vtkMemoryImageReader::RequestUpdateExtent(vtkInformation *, vtkInformationVector ** inputVector, vtkInformationVector * outputVector)
 {
-	return 1;
+    return 1;
 }
 
 int vtkMemoryImageReader::RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector * outputVector)
 {
-	// get the data object
-	vtkInformation *outInfo = outputVector->GetInformationObject(0);
-	vtkImageData *output = vtkImageData::SafeDownCast(
-		outInfo->Get(vtkDataObject::DATA_OBJECT()));
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    vtkImageData *output = vtkImageData::SafeDownCast(
+        outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-	this->Execute(output);
+    this->Execute(output);
 
-	return 1;
+    return 1;
 }
 
 void vtkMemoryImageReader::Execute(vtkImageData * output)
 {
-	output->SetDimensions(width, height, numberOfImages);
-	output->SetScalarType(VTK_UNSIGNED_SHORT, GetOutputInformation(0));	
-	output->SetOrigin(0, 0, 0);
-	output->SetNumberOfScalarComponents(1, GetOutputInformation(0));
-	output->AllocateScalars(VTK_UNSIGNED_SHORT, 1);
-	output->SetExtent(0, width - 1, 0, height - 1, 0, numberOfImages - 1);
+    output->SetDimensions(width, height, numberOfImages);
+    output->SetScalarType(VTK_SHORT, GetOutputInformation(0));
+    //output->SetSpacing(pixelSpacingX, pixelSpacingY, 1);
+    output->SetOrigin(-width / 2, -height / 2, -numberOfImages / 2);
+    output->SetNumberOfScalarComponents(1, GetOutputInformation(0));
+    output->AllocateScalars(VTK_SHORT, 1);
+    output->SetExtent(0, width - 1, 0, height - 1, 0, numberOfImages - 1);
 
-	unsigned short* p = (unsigned short*)output->GetScalarPointer();
-	for (int i = 0; i < numberOfImages; i++)
-	{
-		memcpy(p , images[i], width * height * 2);
-		p = p + width * height;
-	}	
-	output->Modified();
+    short* p = (short*)output->GetScalarPointer();
+
+    for (int y = 0; y < numberOfImages; y++)
+    {
+        for (int z = 0; z < height; z++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                long offset = z * width + x;
+                long storedValue;
+                if (false) //isSigned
+                {
+                    storedValue = ((long) *((short*)images[y] + offset));
+                }
+                else
+                {
+                    storedValue = ((long) *((unsigned short*)images[y] + offset));
+                }
+                *p++ = (short)(rescaleSlope * storedValue) + rescaleIntercept;
+            }
+        }
+    }
+    output->Modified();
 }

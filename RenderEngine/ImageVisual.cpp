@@ -5,11 +5,26 @@
 #include <vtkImageMapper3D.h>
 #include <vtkImageActor.h>
 #include <vtkImageProperty.h>
+#include <vtkSmartPointer.h>
 #include "vtkMemoryImageReader.h"
+
+class ImageVisualPrivates
+{
+public:
+    vtkSmartPointer<vtkImageSliceMapper> mapper;
+    vtkSmartPointer<vtkImageSlice> image;
+    vtkSmartPointer<vtkImageProperty> imageProperty;
+    vtkRenderer* renderer;
+    int numberOfImages;
+    int currentImageIndex;
+};
 
 RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageData^>^ images)
 {
-	vtkMemoryImageReader* reader = vtkMemoryImageReader::New();
+    privates = new ImageVisualPrivates();
+
+    this->images = images;
+	auto reader = vtkSmartPointer<vtkMemoryImageReader>::New();
 
 	numberOfImages = images->Count;
 	int width = images[0]->Width;
@@ -22,34 +37,41 @@ RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageD
 		pixels[i++] = image->Pixels.ToPointer();
 	}
 
-	reader->SetImages(pixels, width, height, images->Count);
+    auto firstImage = images[0];
+	reader->SetImages(pixels, width, height, images->Count, firstImage->Intercept, firstImage->Slope, firstImage->PixelSpacing->X, firstImage->PixelSpacing->Y);
 	reader->Update();
 
+	privates->image = vtkSmartPointer<vtkImageSlice>::New();
+    privates->mapper = vtkSmartPointer<vtkImageSliceMapper>::New();
 
-	image = vtkImageSlice::New();
-	mapper = vtkImageSliceMapper::New();
+    privates->mapper->SetInputData(reader->GetOutput());
+    privates->image->SetMapper(privates->mapper);
 
-	mapper->SetInputData(reader->GetOutput());
-	image->SetMapper(mapper);
+    privates->imageProperty = vtkSmartPointer<vtkImageProperty>::New();
+    privates->image->SetProperty(privates->imageProperty);
+    SetImageIndex((images->Count - 1) / 2);
+}
 
-	vtkImageProperty* imageProperty = vtkImageProperty::New();
-	imageProperty->SetColorWindow(65000);
-	imageProperty->SetColorLevel(32000);
-	image->SetProperty(imageProperty);
-	currentImageIndex = (images->Count - 1) / 2;
-	mapper->SetSliceNumber(currentImageIndex);
+RenderEngine::ImageVisual::!ImageVisual()
+{
+    delete privates;
+}
+
+RenderEngine::ImageVisual::~ImageVisual()
+{
+    this->!ImageVisual();
 }
 
 void RenderEngine::ImageVisual::AddTo(ViewportRenderer ^ viewport)
 {
-	renderer = viewport->GetRenderer();
-	viewport->GetRenderer()->AddActor(image);
-	viewport->GetRenderer()->ResetCamera();
+    privates->renderer = viewport->GetRenderer();
+	viewport->GetRenderer()->AddActor(privates->image);
+	//viewport->GetRenderer()->ResetCamera();
 }
 
 void RenderEngine::ImageVisual::RemoveFrom(ViewportRenderer ^ viewport)
 {
-	viewport->GetRenderer()->RemoveActor2D(image);
+	viewport->GetRenderer()->RemoveActor(privates->image);
 }
 
 int RenderEngine::ImageVisual::GetImageIndex()
@@ -65,5 +87,12 @@ int RenderEngine::ImageVisual::GetNumberOfImages()
 void RenderEngine::ImageVisual::SetImageIndex(int index)
 {
 	currentImageIndex = index;
-	mapper->SetSliceNumber(currentImageIndex);
+    privates->mapper->SetSliceNumber(currentImageIndex);
+
+    auto image = images[index];
+    if (image->DefaultWindowingAvailable) 
+    {
+        privates->imageProperty->SetColorWindow(image->WindowWidth);
+        privates->imageProperty->SetColorLevel(image->WindowLevel);
+    }
 }

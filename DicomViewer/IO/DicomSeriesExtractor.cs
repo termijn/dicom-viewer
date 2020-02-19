@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Dicom;
@@ -16,7 +17,15 @@ namespace DicomViewer.IO
 
         }
 
-        public IEnumerable<Series> ExtractSeries(string path)
+        public IEnumerable<Series> ExtractSeriesFromSingleFile(string path)
+        {
+            var dicomFile = DicomFile.Open(path, FileReadOption.ReadLargeOnDemand);
+            ProcessFile(dicomFile);
+            PostProcessSeries();
+            return _series;
+        }
+
+        public IEnumerable<Series> ExtractSeriesFromDirectory(string path)
         {
             var files = Directory.EnumerateFiles(path);
             var dicomFiles = files.Where(file => DicomFile.HasValidHeader(file));
@@ -25,8 +34,14 @@ namespace DicomViewer.IO
                 var dicomFile = DicomFile.Open(file, FileReadOption.ReadLargeOnDemand);
                 ProcessFile(dicomFile);
             }
+            PostProcessSeries();
+            
+            return _series;
+        }
 
-            foreach(var series in _series)
+        private void PostProcessSeries()
+        {
+            foreach (var series in _series)
             {
                 var firstFile = series.Files.First();
 
@@ -39,9 +54,9 @@ namespace DicomViewer.IO
                 else
                 {
                     series.NumberOfImages = series.Files.Count;
-                }                
+                }
                 series.Is3D = Is3DCapableSopClass(firstFile) && (series.FileNames.Count > 1 || nrFrames > 1);
-                
+
                 for (int i = series.Files.Count / 2; i >= 0; i--)
                 {
                     var middleFile = series.Files[i];
@@ -52,9 +67,8 @@ namespace DicomViewer.IO
                         series.Thumbnail = renderedImage.AsWriteableBitmap();
                         break;
                     }
-                }                
+                }
             }
-            return _series;
         }
 
         public void ProcessFile(DicomFile file)

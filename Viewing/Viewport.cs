@@ -12,16 +12,16 @@ namespace Viewing
 {
     public class Viewport: ContentControl
     {
-        public static DependencyProperty VisualsProperty = 
+        public static readonly DependencyProperty VisualsProperty = 
             DependencyProperty.Register("Visuals", typeof(VisualsCollection), typeof(Viewport), new PropertyMetadata(new VisualsCollection(), OnVisualsChanged));
-        public static DependencyProperty CameraProperty =
+        public static readonly DependencyProperty CameraProperty =
             DependencyProperty.Register("Camera", typeof(Camera), typeof(Viewport), new PropertyMetadata(new Camera(),  OnCameraChanged));
-        public static DependencyProperty InteractorLeftProperty =
+        public static readonly DependencyProperty InteractorLeftProperty =
             DependencyProperty.Register("InteractorLeft", typeof(IMouseInteractor), typeof(Viewport), new PropertyMetadata(null));
-        public static DependencyProperty InteractorRightProperty =
+        public static readonly DependencyProperty InteractorRightProperty =
             DependencyProperty.Register("InteractorRight", typeof(IMouseInteractor), typeof(Viewport), new PropertyMetadata(null));
 
-        public ViewportRenderer ViewportRenderer { get; set; }
+        public ViewportRenderer ViewportRenderer { get; }
 
         private WriteableBitmap _bitmap;
         private CollectionObserver<IVisual> _visualsObserver;

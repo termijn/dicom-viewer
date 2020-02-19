@@ -8,6 +8,8 @@ using Entities;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using RenderEngine;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using Viewing;
@@ -22,6 +24,7 @@ namespace DicomViewer
         private MainViewModel _viewModel;
         private Scan3D _scan;
         private ScanPresenter3D _presenter;
+        private ImageVisual _imageVisual;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -38,6 +41,7 @@ namespace DicomViewer
 
             new PropertySubscription(() => _viewModel.SelectedSeries, () => 
             {
+                _viewModel.ImageViewer.Visuals.Clear();
                 DisposeScan();
                 if (_viewModel.SelectedSeries == null) return;
 
@@ -46,11 +50,11 @@ namespace DicomViewer
                 _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);
                 _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
                 _presenter.Present(_scan);
-
-                _viewModel.ImageViewer.Visuals.Clear();
-                var visual = new ImageVisual(_scan.Volume.Slices);
-                _viewModel.ImageViewer.Visuals.Add(visual);
-                _viewModel.ImageViewer.InteractorLeft = new ImageScrollInteractor(visual);
+                
+                _imageVisual = new ImageVisual(_scan.Volume.Slices);
+                _viewModel.ImageViewer.Visuals.Add(_imageVisual);
+                _viewModel.ImageViewer.InteractorLeft = new ImageScrollInteractor(_imageVisual);
+                _viewModel.ImageViewer.Camera.Zoom = _scan.Volume.Slices.First().Height * _scan.Volume.Slices.First().PixelSpacing.Y;
             });
         }
 
@@ -64,19 +68,7 @@ namespace DicomViewer
 
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                var loader = new DicomVolumeLoader();
-
-                DisposeScan();
-
-                _scan = loader.Load(dialog.FileName);
-
-                if (_scan == null) return;
-
-                _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
-                _presenter.Present(_scan);
-
-                Settings.Default.LastUsedFolder = dialog.FileName;
-                Settings.Default.Save();
+                Open(dialog.FileName);
             }
         }
 
@@ -90,23 +82,43 @@ namespace DicomViewer
 
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                var loader = new DicomVolumeLoader();
-
-                DisposeScan();
-
-                var seriesExtractor = new DicomSeriesExtractor();
-                var series = seriesExtractor.ExtractSeries(dialog.FileName);
-
-                _viewModel.Series = series;
-                _viewModel.SelectedSeries = series.First();
-
-                Settings.Default.LastUsedFolder = dialog.FileName;
-                Settings.Default.Save();
+                Open(dialog.FileName);
             }
+        }
+
+        private void Open(string path)
+        {
+            _viewModel.ImageViewer.Visuals.Clear();
+
+            var loader = new DicomVolumeLoader();
+
+            DisposeScan();
+
+            var seriesExtractor = new DicomSeriesExtractor();
+            IEnumerable<Series> series = null;
+            if (Directory.Exists(path))
+            {
+                series = seriesExtractor.ExtractSeriesFromDirectory(path);
+            } else
+            {
+                series = seriesExtractor.ExtractSeriesFromSingleFile(path);
+            }
+            
+            _viewModel.Series = series;
+            _viewModel.SelectedSeries = series.First();
+
+            Settings.Default.LastUsedFolder = Path.GetDirectoryName(path);
+            Settings.Default.Save();
         }
 
         private void DisposeScan()
         {
+            if (_imageVisual != null)
+            {
+                _imageVisual.Dispose();
+                _imageVisual = null;
+            }
+
             if (_presenter != null)
             {
                 _presenter.Dispose();

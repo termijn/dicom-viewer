@@ -133,18 +133,18 @@ namespace DicomViewer.IO
                 image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
                 image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
                 image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+
+                ReadWindowing(image, functionalGroupPerFrameDataSet);
+                ReadPixelTransformation(image, frameDataSet, functionalGroupPerFrameDataSet);
             }
 
             var firstDataset = dataSet;
             var firstImage = volume.Slices.First();
             var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
-            var pixelValueTransformSequence = frameDataSet.GetSequence(DicomTag.PixelValueTransformationSequence);
-            double intercept = pixelValueTransformSequence.First().GetSingleValueOrDefault<double>(DicomTag.RescaleIntercept, 0);
-            double slope = pixelValueTransformSequence.First().GetSingleValueOrDefault<double>(DicomTag.RescaleSlope, 1);
-
+            
             volume.TransformationToPatient = ToRotationMatrix(firstImage.XAxisPatient, firstImage.YAxisPatient);
-            volume.RescaleIntercept = intercept;
-            volume.RescaleSlope = slope;
+            volume.RescaleIntercept = firstImage.Intercept;
+            volume.RescaleSlope = firstImage.Slope;
             volume.Dimensions = new Dimensions3
             {
                 X = volume.Slices[0].Width,
@@ -158,6 +158,37 @@ namespace DicomViewer.IO
             var patient = GetPatient(dataSet);
 
             return new Scan3D { Volume = volume, Patient = patient };
+        }
+
+        private static void ReadWindowing(ImageData image, DicomDataset functionalGroupPerFrameDataSet)
+        {
+            DicomSequence frameVOILUTSequence;
+            if (functionalGroupPerFrameDataSet.TryGetSequence(DicomTag.FrameVOILUTSequence, out frameVOILUTSequence))
+            {
+                var frameVOILUT = frameVOILUTSequence.ElementAt(0);
+                var windowLevel = frameVOILUT.GetSingleValueOrDefault<double>(DicomTag.WindowCenter, 1000);
+                var windowWidth = frameVOILUT.GetSingleValueOrDefault<double>(DicomTag.WindowWidth, 2000);
+                image.WindowLevel = windowLevel;
+                image.WindowWidth = windowWidth;
+                image.DefaultWindowingAvailable = true;
+            }
+        }
+
+        private static void ReadPixelTransformation(ImageData image, DicomDataset frameDataSet, DicomDataset functionalGroupPerFrameDataSet)
+        {
+            DicomSequence pixelValueTransformationSequence;
+            bool pixelValueTransformationSequenceFound =
+                frameDataSet.TryGetSequence(DicomTag.PixelValueTransformationSequence, out pixelValueTransformationSequence) ||
+                functionalGroupPerFrameDataSet.TryGetSequence(DicomTag.PixelValueTransformationSequence, out pixelValueTransformationSequence);
+
+            if (pixelValueTransformationSequenceFound)
+            {
+                var pixelValueTransformation = pixelValueTransformationSequence.ElementAt(0);
+                var frameIntercept = pixelValueTransformation.GetSingleValueOrDefault<double>(DicomTag.RescaleIntercept, 0);
+                var frameSlope = pixelValueTransformation.GetSingleValueOrDefault<double>(DicomTag.RescaleSlope, 1);
+                image.Intercept = frameIntercept;
+                image.Slope = frameSlope;
+            }
         }
 
         private Scan3D Load(DicomFile dicomFile)
@@ -249,18 +280,18 @@ namespace DicomViewer.IO
                 image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
                 image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
                 image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+
+                ReadWindowing(image, functionalGroupPerFrameDataSet);
+                ReadPixelTransformation(image, frameDataSet, functionalGroupPerFrameDataSet);
             }
 
             var firstDataset = dataSet;
             var firstImage = volume.Slices.First();
             var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
-            var pixelValueTransformSequence = functionalGroupPerFrameDataSet.GetSequence(DicomTag.PixelValueTransformationSequence);
-            double intercept = pixelValueTransformSequence.First().GetSingleValueOrDefault<double>(DicomTag.RescaleIntercept, 0);
-            double slope = pixelValueTransformSequence.First().GetSingleValueOrDefault<double>(DicomTag.RescaleSlope, 1);
-
+            
             volume.TransformationToPatient = ToRotationMatrix(firstImage.XAxisPatient, firstImage.YAxisPatient);
-            volume.RescaleIntercept = intercept;
-            volume.RescaleSlope = slope;
+            volume.RescaleIntercept = firstImage.Intercept;
+            volume.RescaleSlope = firstImage.Slope;
             volume.Dimensions = new Dimensions3
             {
                 X = volume.Slices[0].Width,
@@ -352,16 +383,25 @@ namespace DicomViewer.IO
                             image.XAxisPatient = xAxis.Normalized();
                             image.YAxisPatient = yAxis.Normalized();
                         }
+                        image.Intercept = dataSet.GetValue<double>(DicomTag.RescaleIntercept, 0);
+                        image.Slope = dataSet.GetValue<double>(DicomTag.RescaleSlope, 0);
+
+                        var range = pixelData.GetMinMax();
+
+                        double minValue = (image.Slope * range.Minimum) + image.Intercept;
+                        double maxValue = (image.Slope * range.Maximum) + image.Intercept;
+                        image.WindowLevel = (minValue + maxValue) / 2;
+                        image.WindowWidth = maxValue - minValue;
+                        image.DefaultWindowingAvailable = true;
                     }
                 }
             }
 
-            var firstDataset = files[0].Dataset;
             var firstImage = volume.Slices.First();
             var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
-            volume.TransformationToPatient = ToRotationMatrix(firstImage.XAxisPatient, firstImage.YAxisPatient);                        
-            volume.RescaleIntercept = firstDataset.GetValue<double>(DicomTag.RescaleIntercept,0);
-            volume.RescaleSlope = firstDataset.GetValue<double>(DicomTag.RescaleSlope, 0);
+            volume.TransformationToPatient = ToRotationMatrix(firstImage.XAxisPatient, firstImage.YAxisPatient);
+            volume.RescaleIntercept = firstImage.Intercept;
+            volume.RescaleSlope = firstImage.Slope;
             volume.Dimensions = new Dimensions3
             {
                 X = volume.Slices[0].Width,
