@@ -62,7 +62,7 @@ namespace DicomViewer.IO
 
                         if (generateMissingThumbnails && series.Thumbnail == null && series.FileNames.Count > 0)
                         {
-                            GenerateCreateThumbnail(series);
+                            GenerateThumbnail(series);
                         }
                         if (series.NumberOfImages > 0)
                         {
@@ -72,24 +72,6 @@ namespace DicomViewer.IO
                 }
             }
             return result;
-        }
-
-        private static void GenerateCreateThumbnail(DicomSeries series)
-        {
-            for (int i = series.FileNames.Count / 2; i >= 0; i--)
-            {
-                var middleFileName = series.FileNames[i];
-                var middleFile = DicomFile.Open(middleFileName);
-                if (middleFile.Dataset.Contains(DicomTag.PixelData))
-                {
-                    DicomImage image = new DicomImage(middleFile.Dataset);
-                    image.Scale = 0.25;
-                    var frame = image.NumberOfFrames / 2;
-                    var renderedImage = image.RenderImage(frame);
-                    series.Thumbnail = renderedImage.AsWriteableBitmap();
-                    break;
-                }
-            }
         }
 
         public IEnumerable<Series> ExtractSeriesFromSingleFile(string path)
@@ -112,28 +94,6 @@ namespace DicomViewer.IO
             PostProcessSeries();
             
             return _series;
-        }
-
-        private void PostProcessSeries()
-        {
-            foreach (var series in _series)
-            {
-                var firstFile = series.Files.First();
-
-                var dicomPixelData = DicomPixelData.Create(firstFile.Dataset);
-                var nrFrames = dicomPixelData.NumberOfFrames;
-                if (nrFrames > 1)
-                {
-                    series.NumberOfImages = nrFrames;
-                }
-                else
-                {
-                    series.NumberOfImages = series.Files.Count;
-                }
-                series.Is3D = Is3DCapableSopClass(firstFile) && (series.FileNames.Count > 1 || nrFrames > 1);
-
-                GenerateCreateThumbnail(series);
-            }
         }
 
         public void ProcessFile(DicomFile file)
@@ -191,6 +151,46 @@ namespace DicomViewer.IO
                 sopclass == DicomSopClasses.XA3DImageStorageSopClass ||
                 sopclass == DicomSopClasses.CTImageStorageSopClass ||
                 (mr3d);
+        }
+
+        private static void GenerateThumbnail(DicomSeries series)
+        {
+            for (int i = series.FileNames.Count / 2; i >= 0; i--)
+            {
+                var middleFileName = series.FileNames[i];
+                var middleFile = DicomFile.Open(middleFileName);
+                if (middleFile.Dataset.Contains(DicomTag.PixelData))
+                {
+                    DicomImage image = new DicomImage(middleFile.Dataset);
+                    image.Scale = 0.25;
+                    var frame = image.NumberOfFrames / 2;
+                    var renderedImage = image.RenderImage(frame);
+                    series.Thumbnail = renderedImage.AsWriteableBitmap();
+                    break;
+                }
+            }
+        }
+
+        private void PostProcessSeries()
+        {
+            foreach (var series in _series)
+            {
+                var firstFile = series.Files.First();
+
+                var dicomPixelData = DicomPixelData.Create(firstFile.Dataset);
+                var nrFrames = dicomPixelData.NumberOfFrames;
+                if (nrFrames > 1)
+                {
+                    series.NumberOfImages = nrFrames;
+                }
+                else
+                {
+                    series.NumberOfImages = series.Files.Count;
+                }
+                series.Is3D = Is3DCapableSopClass(firstFile) && (series.FileNames.Count > 1 || nrFrames > 1);
+
+                GenerateThumbnail(series);
+            }
         }
     }
 }

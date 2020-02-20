@@ -50,7 +50,16 @@ RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageD
     privates->imageProperty = vtkSmartPointer<vtkImageProperty>::New();
     privates->imageProperty->SetInterpolationTypeToCubic();
     privates->image->SetProperty(privates->imageProperty);
-    SetImageIndex((images->Count - 1) / 2);
+
+    int index = (images->Count - 1) / 2;
+    SetImageIndex(index);
+
+    auto image = images[index];
+    if (image->DefaultWindowingAvailable)
+    {
+        privates->imageProperty->SetColorWindow(image->WindowWidth);
+        privates->imageProperty->SetColorLevel(image->WindowLevel);
+    }
 }
 
 RenderEngine::ImageVisual::!ImageVisual()
@@ -104,11 +113,4 @@ void RenderEngine::ImageVisual::SetImageIndex(int index)
 {
     currentImageIndex = index;
     privates->mapper->SetSliceNumber(currentImageIndex);
-
-    auto image = images[index];
-    if (image->DefaultWindowingAvailable)
-    {
-        privates->imageProperty->SetColorWindow(image->WindowWidth);
-        privates->imageProperty->SetColorLevel(image->WindowLevel);
-    }
 }

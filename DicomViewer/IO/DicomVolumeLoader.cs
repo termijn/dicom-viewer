@@ -62,23 +62,7 @@ namespace DicomViewer.IO
                 var planeOrientations = frameDataSet.GetSequence(DicomTag.PlaneOrientationSequence);
                 var planeOrientationDataSet = planeOrientations.ElementAt(0);
                 var dicomOrientationPatient = planeOrientationDataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImageOrientationPatient);
-                if (dicomOrientationPatient != null)
-                {
-                    var xAxis = new Vector3
-                    {
-                        X = dicomOrientationPatient.Get<double>(0),
-                        Y = dicomOrientationPatient.Get<double>(1),
-                        Z = dicomOrientationPatient.Get<double>(2)
-                    };
-                    var yAxis = new Vector3
-                    {
-                        X = dicomOrientationPatient.Get<double>(3),
-                        Y = dicomOrientationPatient.Get<double>(4),
-                        Z = dicomOrientationPatient.Get<double>(5)
-                    };
-                    image.XAxisPatient = xAxis.Normalized();
-                    image.YAxisPatient = yAxis.Normalized();
-                }
+                GetImageOrientationPatient(image, dicomOrientationPatient);
 
                 var functionalGroupPerFrame = dataSet.GetSequence(DicomTag.PerFrameFunctionalGroupsSequence);
                 var functionalGroupPerFrameDataSet = functionalGroupPerFrame.ElementAt(i);
@@ -114,6 +98,27 @@ namespace DicomViewer.IO
             var patient = GetPatient(dataSet);
 
             return new Scan { Volume = volume, Patient = patient };
+        }
+
+        private static void GetImageOrientationPatient(ImageData image, DicomDecimalString dicomOrientationPatient)
+        {
+            if (dicomOrientationPatient != null)
+            {
+                var xAxis = new Vector3
+                {
+                    X = dicomOrientationPatient.Get<double>(0),
+                    Y = dicomOrientationPatient.Get<double>(1),
+                    Z = dicomOrientationPatient.Get<double>(2)
+                };
+                var yAxis = new Vector3
+                {
+                    X = dicomOrientationPatient.Get<double>(3),
+                    Y = dicomOrientationPatient.Get<double>(4),
+                    Z = dicomOrientationPatient.Get<double>(5)
+                };
+                image.XAxisPatient = xAxis.Normalized();
+                image.YAxisPatient = yAxis.Normalized();
+            }
         }
 
         private static void ReadWindowing(ImageData image, DicomDataset functionalGroupPerFrameDataSet)
@@ -198,23 +203,7 @@ namespace DicomViewer.IO
                 var planeOrientations = functionalGroupPerFrameDataSet.GetSequence(DicomTag.PlaneOrientationSequence);
                 var planeOrientationDataSet = planeOrientations.ElementAt(0);
                 var dicomOrientationPatient = planeOrientationDataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImageOrientationPatient);
-                if (dicomOrientationPatient != null)
-                {
-                    var xAxis = new Vector3
-                    {
-                        X = dicomOrientationPatient.Get<double>(0),
-                        Y = dicomOrientationPatient.Get<double>(1),
-                        Z = dicomOrientationPatient.Get<double>(2)
-                    };
-                    var yAxis = new Vector3
-                    {
-                        X = dicomOrientationPatient.Get<double>(3),
-                        Y = dicomOrientationPatient.Get<double>(4),
-                        Z = dicomOrientationPatient.Get<double>(5)
-                    };
-                    image.XAxisPatient = xAxis.Normalized();
-                    image.YAxisPatient = yAxis.Normalized();
-                }
+                GetImageOrientationPatient(image, dicomOrientationPatient);
 
                 var planePositionSequence = functionalGroupPerFrameDataSet.GetSequence(DicomTag.PlanePositionSequence);
                 var planePositionDataSet = planePositionSequence.ElementAt(0);
@@ -294,23 +283,8 @@ namespace DicomViewer.IO
                         image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
 
                         var dicomOrientationPatient = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImageOrientationPatient);
-                        if (dicomOrientationPatient != null)
-                        {
-                            var xAxis = new Vector3
-                            {
-                                X = dicomOrientationPatient.Get<double>(0),
-                                Y = dicomOrientationPatient.Get<double>(1),
-                                Z = dicomOrientationPatient.Get<double>(2)
-                            };
-                            var yAxis = new Vector3
-                            {
-                                X = dicomOrientationPatient.Get<double>(3),
-                                Y = dicomOrientationPatient.Get<double>(4),
-                                Z = dicomOrientationPatient.Get<double>(5)
-                            };
-                            image.XAxisPatient = xAxis.Normalized();
-                            image.YAxisPatient = yAxis.Normalized();
-                        }
+                        GetImageOrientationPatient(image, dicomOrientationPatient);
+
                         image.Intercept = dataSet.GetValue<double>(DicomTag.RescaleIntercept, 0);
                         image.Slope = dataSet.GetValue<double>(DicomTag.RescaleSlope, 0);
 
