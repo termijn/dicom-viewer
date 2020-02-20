@@ -39,24 +39,29 @@ namespace DicomViewer
             _viewModel.LoadDatasetCommand = new BindableCommand(LoadFolder);
             _viewModel.LoadFileCommand = new BindableCommand(LoadFile);
 
-            new PropertySubscription(() => _viewModel.SelectedSeries, () => 
+            new PropertySubscription(() => _viewModel.SelectedSeries, () =>
             {
-                _viewModel.ImageViewer.Visuals.Clear();
-                DisposeScan();
-                if (_viewModel.SelectedSeries == null) return;
-
-                var loader = new DicomVolumeLoader();
-                var dicomSeries = _viewModel.SelectedSeries as DicomSeries;
-                _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);
-                _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
-                _presenter.Present(_scan);
-                
-                _imageVisual = new ImageVisual(_scan.Volume.Slices);
-                _viewModel.ImageViewer.Visuals.Add(_imageVisual);
-                _viewModel.ImageViewer.InteractorLeft = new ImageScrollInteractor(_imageVisual);
-                _viewModel.ImageViewer.Camera.Zoom = _scan.Volume.Slices.First().Height * _scan.Volume.Slices.First().PixelSpacing.Y;
-                _viewModel.SwitchTo2DCommand.Execute(null);
+                LoadSeries();
             });
+        }
+
+        private void LoadSeries()
+        {
+            _viewModel.ImageViewer.Visuals.Clear();
+            DisposeScan();
+            if (_viewModel.SelectedSeries == null) return;
+
+            var loader = new DicomVolumeLoader();
+            var dicomSeries = _viewModel.SelectedSeries as DicomSeries;
+            _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);
+            _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
+            _presenter.Present(_scan);
+
+            _imageVisual = new ImageVisual(_scan.Volume.Slices);
+            _viewModel.ImageViewer.Visuals.Add(_imageVisual);
+            _viewModel.ImageViewer.InteractorLeft = new ImageScrollInteractor(_imageVisual);
+            _viewModel.ImageViewer.Camera.Zoom = _scan.Volume.Slices.First().Height * _scan.Volume.Slices.First().PixelSpacing.Y * 0.5;
+            _viewModel.SwitchTo2DCommand.Execute(null);
         }
 
         private void LoadFile()
@@ -112,7 +117,6 @@ namespace DicomViewer
                     series = seriesExtractor.ExtractSeriesFromSingleFile(path);
                 }
             }
-            
             _viewModel.Series = series;
             _viewModel.SelectedSeries = series.First();
 

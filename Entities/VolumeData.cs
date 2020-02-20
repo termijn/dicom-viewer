@@ -10,9 +10,9 @@ namespace Entities
 
         /// <summary>
         /// Gets the dimensions of the volume
-        /// x => width of a single slice
-        /// y => number of slices 
-        /// z => height of a single slice
+        /// x => width of a single slice in pixels
+        /// y => number of slices in pixels
+        /// z => height of a single slice in pixels
         /// </summary>
         public Dimensions3 Dimensions { get; set; } = new Dimensions3();
         public Matrix TransformationToPatient = new Matrix();

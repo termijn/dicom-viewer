@@ -164,8 +164,8 @@ namespace Viewing
 
         private void OnCameraTransformationChanged(object sender, PropertyChangedEventArgs e)
         {
-            ViewportRenderer.SetCameraTransformation(_camera.TransformationToWorld * _camera.ViewportPan);
             ViewportRenderer.SetZoom(_camera.Zoom);
+            ViewportRenderer.SetCameraTransformation(_camera.TransformationToWorld * _camera.ViewportPan);
             InvalidateVisual();
         }
 

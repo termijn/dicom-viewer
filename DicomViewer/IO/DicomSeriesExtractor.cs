@@ -10,18 +10,14 @@ namespace DicomViewer.IO
 {
     public class DicomSeriesExtractor
     {
-        private readonly List<DicomSeries> _series = new List<DicomSeries>();
+        private List<DicomSeries> _series = new List<DicomSeries>();
 
-        public DicomSeriesExtractor()
+        public IEnumerable<Series> ExtractSeriesFromDicomDir(string path, bool generateMissingThumbnails = false)
         {
-
-        }
-
-        public IEnumerable<Series> ExtractSeriesFromDicomDir(string path)
-        {
+            var result = new List<DicomSeries>();
             if (!DicomDirectory.HasValidHeader(path))
             {
-                return new List<Series>();
+                return result;
             }
             var dicomDirectory = DicomDirectory.Open(path);
 
@@ -63,24 +59,36 @@ namespace DicomViewer.IO
                             var absolutePath = Path.GetDirectoryName(path) + @"\\" + relativePath;
                             series.FileNames.Add(absolutePath);
                         }
+
+                        if (generateMissingThumbnails && series.Thumbnail == null && series.FileNames.Count > 0)
+                        {
+                            GenerateCreateThumbnail(series);
+                        }
                         if (series.NumberOfImages > 0)
                         {
-                            _series.Add(series);
+                            result.Add(series);
                         }
                     }
                 }
             }
-            return _series;
+            return result;
         }
 
-
-        private void ShowImageLevelInfo(DicomDataset dataset)
+        private static void GenerateCreateThumbnail(DicomSeries series)
         {
-            var values = dataset.GetValues<string>(DicomTag.ReferencedFileID);
-            var referencedFileId = string.Join(@"\", values);
-            var sopClassUidInFile = dataset.GetValue<string>(DicomTag.ReferencedSOPClassUIDInFile, 0);
-            var sopInstanceUidInFile = dataset.GetValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile, 0);
-            var transferSyntaxUidInFile = dataset.GetValue<string>(DicomTag.ReferencedTransferSyntaxUIDInFile, 0);
+            for (int i = series.FileNames.Count / 2; i >= 0; i--)
+            {
+                var middleFileName = series.FileNames[i];
+                var middleFile = DicomFile.Open(middleFileName);
+                if (middleFile.Dataset.Contains(DicomTag.PixelData))
+                {
+                    DicomImage image = new DicomImage(middleFile.Dataset);
+                    var frame = image.NumberOfFrames / 2;
+                    var renderedImage = image.RenderImage(frame);
+                    series.Thumbnail = renderedImage.AsWriteableBitmap();
+                    break;
+                }
+            }
         }
 
         public IEnumerable<Series> ExtractSeriesFromSingleFile(string path)
@@ -123,17 +131,7 @@ namespace DicomViewer.IO
                 }
                 series.Is3D = Is3DCapableSopClass(firstFile) && (series.FileNames.Count > 1 || nrFrames > 1);
 
-                for (int i = series.Files.Count / 2; i >= 0; i--)
-                {
-                    var middleFile = series.Files[i];
-                    if (middleFile.Dataset.Contains(DicomTag.PixelData))
-                    {
-                        DicomImage image = new DicomImage(middleFile.Dataset);
-                        var renderedImage = image.RenderImage();
-                        series.Thumbnail = renderedImage.AsWriteableBitmap();
-                        break;
-                    }
-                }
+                GenerateCreateThumbnail(series);
             }
         }
 

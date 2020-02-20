@@ -56,7 +56,6 @@ int vtkVolumeMemoryReader::RequestUpdateExtent(vtkInformation *, vtkInformationV
 
 int vtkVolumeMemoryReader::RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector * outputVector)
 {
-    // get the data object
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
     vtkImageData *output = vtkImageData::SafeDownCast(
         outInfo->Get(vtkDataObject::DATA_OBJECT()));

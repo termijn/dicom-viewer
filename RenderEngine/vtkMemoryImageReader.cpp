@@ -66,8 +66,8 @@ void vtkMemoryImageReader::Execute(vtkImageData * output)
 {
     output->SetDimensions(width, height, numberOfImages);
     output->SetScalarType(VTK_SHORT, GetOutputInformation(0));
-    //output->SetSpacing(pixelSpacingX, pixelSpacingY, 1);
-    output->SetOrigin(-width / 2, -height / 2, -numberOfImages / 2);
+    output->SetSpacing(pixelSpacingX, pixelSpacingY, 1);
+    output->SetOrigin(-(width * pixelSpacingX) / 2, -(height * pixelSpacingY) / 2, -numberOfImages / 2);
     output->SetNumberOfScalarComponents(1, GetOutputInformation(0));
     output->AllocateScalars(VTK_SHORT, 1);
     output->SetExtent(0, width - 1, 0, height - 1, 0, numberOfImages - 1);

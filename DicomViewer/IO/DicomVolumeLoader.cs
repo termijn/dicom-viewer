@@ -4,48 +4,12 @@ using Dicom.Imaging.Codec;
 using Dicom.Imaging.Render;
 using Entities;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace DicomViewer.IO
 {
-
     public class DicomVolumeLoader
     {
-        private const string CTImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.2";
-        private const string MRImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.4";
-        private const string EnhancedMRImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.4.1";
-        private const string XA3DImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.13.1.1";
-
-        public Scan Load(string path)
-        {
-            if (Directory.Exists(path))
-            {
-                var files = Directory.EnumerateFiles(path);
-                var dicomFiles = files.Where(file => DicomFile.HasValidHeader(file));
-
-                var filesPerSeries = GetFilesPerSeries(dicomFiles);
-                if (filesPerSeries.Count == 0) return null;
-
-                if (filesPerSeries.Values.First().Count == 1)
-                {
-                    return Load(filesPerSeries.FirstOrDefault().Value.FirstOrDefault());
-                }
-                else
-                {
-                    var kvp = filesPerSeries.FirstOrDefault();
-                    var dicomFilesForFirstSeries = kvp.Value;
-
-                    return Load(dicomFilesForFirstSeries);
-                }
-            }
-            else if (File.Exists(path))
-            {
-                return Load(DicomFile.Open(path, FileReadOption.ReadLargeOnDemand));
-            }
-            return null;
-        }
-
         public Scan Load(DicomSeries series)
         {
             if (series.FileNames.Count == 1)
@@ -203,11 +167,11 @@ namespace DicomViewer.IO
             var dataSet = file.Dataset;
             var sopclass = dataSet.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
 
-            if (sopclass == XA3DImageStorageSopClass)
+            if (sopclass == DicomSopClasses.XA3DImageStorageSopClass)
             {
                 return LoadXA3DImageStorage(dicomFile);
             }
-            else if (sopclass == EnhancedMRImageStorageSopClass)
+            else if (sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass)
             {
                 return LoadEnhancedMRImage(dicomFile);
             }
@@ -315,7 +279,7 @@ namespace DicomViewer.IO
 
         private Scan Load(List<DicomFile> files)
         {
-            if (files.Count < 2) return null;
+            if (files.Count < 2) { return null; }
 
             var volume = new VolumeData();
 
@@ -330,9 +294,9 @@ namespace DicomViewer.IO
                 var sopclass = dataSet.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
 
                 if (
-                    sopclass == CTImageStorageSopClass ||
-                    sopclass == MRImageStorageSopClass ||
-                    sopclass == EnhancedMRImageStorageSopClass)
+                    sopclass == DicomSopClasses.CTImageStorageSopClass ||
+                    sopclass == DicomSopClasses.MRImageStorageSopClass ||
+                    sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass)
                 {
                     var dicomPixelData = DicomPixelData.Create(dataSet);
                     var nrFrames = dicomPixelData.NumberOfFrames;

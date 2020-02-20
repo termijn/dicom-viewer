@@ -26,8 +26,11 @@ namespace Viewing
         {
             if (!_isMouseDown) return false;
 
-            var delta = (position - _initialPosition) * 0.1;
-            _camera.ViewportPan = Matrix.Translation(new Vector3(delta.X, -delta.Y, 0)) * _initialTransform;
+            var delta = (position - _initialPosition);
+            var viewportHeightInMm = _camera.Zoom;
+            var mmPerPixel = viewportHeightInMm / viewport.ActualHeight;
+            var deltaInMm = delta * mmPerPixel;
+            _camera.ViewportPan = Matrix.Translation(new Vector3(deltaInMm.X, -deltaInMm.Y, 0)) * _initialTransform;
             return true;
         }
 
