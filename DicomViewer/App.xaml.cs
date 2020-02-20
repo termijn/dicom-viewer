@@ -100,10 +100,17 @@ namespace DicomViewer
             if (Directory.Exists(path))
             {
                 series = seriesExtractor.ExtractSeriesFromDirectory(path);
-            } else
+            }
+            else
             {
-                series = seriesExtractor.ExtractSeriesFromDicomDir(path);
-                //series = seriesExtractor.ExtractSeriesFromSingleFile(path);
+                if (string.Compare(Path.GetFileName(path), "DICOMDIR", true) == 0)
+                {
+                    series = seriesExtractor.ExtractSeriesFromDicomDir(path);
+                }
+                else
+                {
+                    series = seriesExtractor.ExtractSeriesFromSingleFile(path);
+                }
             }
             
             _viewModel.Series = series;
