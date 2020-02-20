@@ -74,6 +74,22 @@ void RenderEngine::ImageVisual::RemoveFrom(ViewportRenderer ^ viewport)
     viewport->GetRenderer()->RemoveActor(privates->image);
 }
 
+double RenderEngine::ImageVisual::GetWindowLevel()
+{
+    return privates->imageProperty->GetColorLevel();
+}
+
+double RenderEngine::ImageVisual::GetWindowWidth()
+{
+    return privates->imageProperty->GetColorWindow();
+}
+
+void RenderEngine::ImageVisual::SetWindowing(double level, double width)
+{
+    privates->imageProperty->SetColorLevel(level);
+    privates->imageProperty->SetColorWindow(width);
+}
+
 int RenderEngine::ImageVisual::GetImageIndex()
 {
     return currentImageIndex;

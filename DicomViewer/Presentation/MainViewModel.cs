@@ -1,6 +1,5 @@
 ﻿using DicomViewer.DotNetExtensions;
 using Entities;
-using RenderEngine;
 using System.Collections.Generic;
 
 namespace DicomViewer.Presentation

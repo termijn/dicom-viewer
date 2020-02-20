@@ -27,7 +27,7 @@ namespace Viewing
             if (!_isMouseDown) return false;
 
             var delta = (position - _initialPosition);
-            var viewportHeightInMm = _camera.Zoom;
+            var viewportHeightInMm = _camera.Zoom * 2;
             var mmPerPixel = viewportHeightInMm / viewport.ActualHeight;
             var deltaInMm = delta * mmPerPixel;
             _camera.ViewportPan = Matrix.Translation(new Vector3(deltaInMm.X, -deltaInMm.Y, 0)) * _initialTransform;

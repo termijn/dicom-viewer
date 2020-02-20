@@ -46,22 +46,8 @@ namespace DicomViewer.IO
             {
                 var pixelData = PixelDataFactory.Create(dicomPixelData, i);
 
-                if (pixelData.Components != 1) continue;
-
-                ImageData image = null;
-                if (pixelData is GrayscalePixelDataU16 grayscalePixelDataU16)
-                {
-                    image = new ImageData(grayscalePixelDataU16.Data);
-                }
-                else if (pixelData is GrayscalePixelDataS16 grayscalePixelDataS16)
-                {
-                    image = new ImageData(grayscalePixelDataS16.Data);
-                }
-                else
-                {
-                    // Unsupported data format
-                    continue;
-                }
+                ImageData image = CreateImageData(pixelData);
+                if (image == null) continue;
 
                 image.Width = dicomPixelData.Width;
                 image.Height = dicomPixelData.Height;
@@ -193,22 +179,8 @@ namespace DicomViewer.IO
             {
                 var pixelData = PixelDataFactory.Create(dicomPixelData, i);
 
-                if (pixelData.Components != 1) continue;
-
-                ImageData image = null;
-                if (pixelData is GrayscalePixelDataU16 grayscalePixelDataU16)
-                {
-                    image = new ImageData(grayscalePixelDataU16.Data);
-                }
-                else if (pixelData is GrayscalePixelDataS16 grayscalePixelDataS16)
-                {
-                    image = new ImageData(grayscalePixelDataS16.Data);
-                }
-                else
-                {
-                    // Unsupported data format
-                    continue;
-                }
+                ImageData image = CreateImageData(pixelData);
+                if (image == null) continue;
 
                 image.Width = dicomPixelData.Width;
                 image.Height = dicomPixelData.Height;
@@ -305,22 +277,8 @@ namespace DicomViewer.IO
                     {
                         var pixelData = PixelDataFactory.Create(dicomPixelData, i);
 
-                        if (pixelData.Components != 1) continue;
-
-                        ImageData image = null;
-                        if (pixelData is GrayscalePixelDataU16 grayscalePixelDataU16)
-                        {
-                            image = new ImageData(grayscalePixelDataU16.Data);
-                        }
-                        else if (pixelData is GrayscalePixelDataS16 grayscalePixelDataS16)
-                        {
-                            image = new ImageData(grayscalePixelDataS16.Data);
-                        }
-                        else
-                        {
-                            // Unsupported data format
-                            continue;
-                        }
+                        ImageData image = CreateImageData(pixelData);
+                        if (image == null) continue;
 
                         image.Width = dicomPixelData.Width;
                         image.Height = dicomPixelData.Height;
@@ -387,7 +345,7 @@ namespace DicomViewer.IO
             return new Scan { Volume = volume, Patient = patient };
         }
 
-        private Patient GetPatient(DicomDataset dataSet)
+        private static Patient GetPatient(DicomDataset dataSet)
         {
             var result = new Patient();
 
@@ -401,7 +359,7 @@ namespace DicomViewer.IO
             return result;
         }
 
-        private Matrix ToRotationMatrix(Vector3 xAxis, Vector3 yAxis)
+        private static Matrix ToRotationMatrix(Vector3 xAxis, Vector3 yAxis)
         {
             var m = new Matrix();
             var zAxis = xAxis.Cross(yAxis);
@@ -427,7 +385,24 @@ namespace DicomViewer.IO
             return m;
         }
 
-        private Spacing3 GetVoxelSpacing(VolumeData volume)
+        private static ImageData CreateImageData(IPixelData pixelData)
+        {
+            ImageData image = null;
+
+            if (pixelData.Components != 1) { return null; }
+
+            if (pixelData is GrayscalePixelDataU16 grayscalePixelDataU16)
+            {
+                image = new ImageData(grayscalePixelDataU16.Data);
+            }
+            else if (pixelData is GrayscalePixelDataS16 grayscalePixelDataS16)
+            {
+                image = new ImageData(grayscalePixelDataS16.Data);
+            }
+            return image;
+        }
+
+        private static Spacing3 GetVoxelSpacing(VolumeData volume)
         {
             var slices = volume.Slices;
             var firstSlice = slices.First();
@@ -438,25 +413,6 @@ namespace DicomViewer.IO
                 Z = firstSlice.PixelSpacing.Y
             };
             return spacing;
-        }
-
-        private Dictionary<string, List<DicomFile>> GetFilesPerSeries(IEnumerable<string> dicomFilePaths)
-        {
-            var seriesToFile = new Dictionary<string, List<DicomFile>>();
-            foreach (var dicomFile in dicomFilePaths)
-            {
-                var file = DicomFile.Open(dicomFile);
-                string seriesInstanceUid = file.Dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty);
-                if (!string.IsNullOrEmpty(seriesInstanceUid))
-                {
-                    if (!seriesToFile.ContainsKey(seriesInstanceUid))
-                    {
-                        seriesToFile[seriesInstanceUid] = new List<DicomFile>();
-                    }
-                    seriesToFile[seriesInstanceUid].Add(file);
-                }
-            }
-            return seriesToFile;
         }
     }
 }

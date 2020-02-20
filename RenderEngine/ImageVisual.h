@@ -19,6 +19,10 @@ namespace RenderEngine
         virtual void AddTo(ViewportRenderer ^ viewport);
         virtual void RemoveFrom(ViewportRenderer ^ viewport);
 
+        double GetWindowLevel();
+        double GetWindowWidth();
+        void SetWindowing(double level, double width);
+
         int GetImageIndex();
         int GetNumberOfImages();
         void SetImageIndex(int index);

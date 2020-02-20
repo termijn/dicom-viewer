@@ -83,7 +83,7 @@
                                 </TextBlock>
                                 <Grid>
                                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">No thumbnail</TextBlock>
-                                    <Image Margin="0,4,0,0" Width="100" Height="100" Stretch="Fill" Source="{Binding Thumbnail}"/>
+                                    <Image Margin="0,4,0,0" Width="100" Height="100" Stretch="UniformToFill" Source="{Binding Thumbnail}"/>
                                 </Grid>
                             </DockPanel>
                         </DataTemplate>

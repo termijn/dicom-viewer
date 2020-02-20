@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DicomViewer.Presentation"
              xmlns:viewing="clr-namespace:Viewing;assembly=Viewing"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -12,6 +13,22 @@
             Visuals="{Binding Visuals}"
             Camera="{Binding Camera}"
             InteractorLeft="{Binding InteractorLeft}"
+            InteractorRight="{Binding InteractorRight}"
             />
+
+        <StackPanel Margin="12,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the image scroll tool" IsChecked="{Binding Tools.IsScrollActive}">
+                <iconPacks:PackIconMaterialDesign Kind="Pages" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </ToggleButton>
+            <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the zoom tool" IsChecked="{Binding Tools.IsZoomActive}">
+                <iconPacks:PackIconMaterialDesign Kind="ZoomIn" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </ToggleButton>
+            <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the pan tool" IsChecked="{Binding Tools.IsPanActive}">
+                <iconPacks:PackIconMaterialDesign Kind="PanTool" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </ToggleButton>
+            <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the windowing tool" IsChecked="{Binding Tools.IsWindowingActive}">
+                <iconPacks:PackIconMaterialDesign Kind="Opacity" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </ToggleButton>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -1,19 +1,35 @@
 ﻿using Entities;
-using Viewing;
 
 namespace DicomViewer.Presentation
 {
+
     public class ToolSelectorViewModel: Bindable
     {
-        private readonly VolumeViewerViewModel volumeViewer;
+        private readonly IInteractorActivator _activator;
         private bool _isZoomActive;
         private bool _isRotateActive = true;
         private bool _isPanActive;
         private bool _isWindowingActive;
+        private bool _isScrollActive;
 
-        public ToolSelectorViewModel(VolumeViewerViewModel volumeViewer)
+        public ToolSelectorViewModel(IInteractorActivator activator)
         {
-            this.volumeViewer = volumeViewer;
+            _activator = activator;
+        }
+
+        public bool IsScrollActive
+        {
+            get => _isScrollActive;
+            set
+            {
+                if (value)
+                {
+                    DisableAll();
+                    _isScrollActive = true;
+                    _activator.ActivateScroll();
+                }
+                RaiseAllPropertiesChangedEvent();
+            }
         }
 
         public bool IsZoomActive
@@ -23,15 +39,14 @@ namespace DicomViewer.Presentation
             {
                 if (value)
                 {
+                    DisableAll();
                     _isZoomActive = true;
-                    _isRotateActive = false;
-                    _isPanActive = false;
-                    _isWindowingActive = false;
-                    volumeViewer.InteractorLeft = new ZoomInteractor(volumeViewer.Camera);
+                    _activator.ActivateZoom();
                 }
                 RaiseAllPropertiesChangedEvent();
             }
         }
+
         public bool IsRotateActive
         {
             get => _isRotateActive;
@@ -39,11 +54,9 @@ namespace DicomViewer.Presentation
             {
                 if (value)
                 {
-                    _isZoomActive = false;
+                    DisableAll();
                     _isRotateActive = true;
-                    _isPanActive = false;
-                    _isWindowingActive = false;
-                    volumeViewer.InteractorLeft = new RotateCameraInteractor(volumeViewer.Camera);
+                    _activator.ActivateRotate();
                 }
                 RaiseAllPropertiesChangedEvent();
             }
@@ -56,11 +69,9 @@ namespace DicomViewer.Presentation
             {
                 if (value)
                 {
-                    _isZoomActive = false;
-                    _isRotateActive = false;
+                    DisableAll();
                     _isPanActive = true;
-                    _isWindowingActive = false;
-                    volumeViewer.InteractorLeft = new PanCameraInteractor(volumeViewer.Camera);
+                    _activator.ActivatePan();
                 }
                 RaiseAllPropertiesChangedEvent();
             }
@@ -73,14 +84,21 @@ namespace DicomViewer.Presentation
             {
                 if (value)
                 {
-                    _isZoomActive = false;
-                    _isRotateActive = false;
-                    _isPanActive = false;
-                    _isWindowingActive = false;
-                    volumeViewer.InteractorLeft = new WindowingInteractor { VolumeVisual = volumeViewer.VolumeVisual };
+                    DisableAll();
+                    _isWindowingActive = true;
+                    _activator.ActivateWindowing();
                 }
                 RaiseAllPropertiesChangedEvent();
             }
+        }
+
+        private void DisableAll()
+        {
+            _isZoomActive = false;
+            _isRotateActive = false;
+            _isPanActive = false;
+            _isWindowingActive = false;
+            _isScrollActive = false;
         }
     }
 }

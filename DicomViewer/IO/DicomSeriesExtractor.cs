@@ -15,7 +15,7 @@ namespace DicomViewer.IO
         public IEnumerable<Series> ExtractSeriesFromDicomDir(string path, bool generateMissingThumbnails = false)
         {
             var result = new List<DicomSeries>();
-            if (!DicomDirectory.HasValidHeader(path))
+            if (!DicomFile.HasValidHeader(path))
             {
                 return result;
             }
@@ -83,6 +83,7 @@ namespace DicomViewer.IO
                 if (middleFile.Dataset.Contains(DicomTag.PixelData))
                 {
                     DicomImage image = new DicomImage(middleFile.Dataset);
+                    image.Scale = 0.25;
                     var frame = image.NumberOfFrames / 2;
                     var renderedImage = image.RenderImage(frame);
                     series.Thumbnail = renderedImage.AsWriteableBitmap();
