@@ -17,7 +17,7 @@ namespace DicomViewer.IO
         private const string EnhancedMRImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.4.1";
         private const string XA3DImageStorageSopClass = "1.2.840.10008.5.1.4.1.1.13.1.1";
 
-        public Scan3D Load(string path)
+        public Scan Load(string path)
         {
             if (Directory.Exists(path))
             {
@@ -46,22 +46,28 @@ namespace DicomViewer.IO
             return null;
         }
 
-        public Scan3D Load(DicomSeries series)
+        public Scan Load(DicomSeries series)
         {
-            if (!series.Is3D) return null;
-            
-            if (series.Files.Count == 1)
+            if (series.FileNames.Count == 1)
             {
-                return Load(series.Files.First());
+                var filePath = series.FileNames.First();
+                var file = DicomFile.Open(filePath);
+                return Load(file);
             }
-            else if (series.Files.Count > 1)
+            else if (series.FileNames.Count > 1)
             {
-                return Load(series.Files);
+                var files = new List<DicomFile>();
+                foreach(var fileName in series.FileNames)
+                {
+                    var file = DicomFile.Open(fileName);
+                    files.Add(file);
+                }
+                return Load(files);
             }
             return null;
         }
 
-        private Scan3D LoadXA3DImageStorage(DicomFile dicomFile)
+        private Scan LoadXA3DImageStorage(DicomFile dicomFile)
         {
             var volume = new VolumeData();
             var dataSet = dicomFile.Dataset;
@@ -157,7 +163,7 @@ namespace DicomViewer.IO
 
             var patient = GetPatient(dataSet);
 
-            return new Scan3D { Volume = volume, Patient = patient };
+            return new Scan { Volume = volume, Patient = patient };
         }
 
         private static void ReadWindowing(ImageData image, DicomDataset functionalGroupPerFrameDataSet)
@@ -191,7 +197,7 @@ namespace DicomViewer.IO
             }
         }
 
-        private Scan3D Load(DicomFile dicomFile)
+        private Scan Load(DicomFile dicomFile)
         {
             var file = dicomFile.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
             var dataSet = file.Dataset;
@@ -208,7 +214,7 @@ namespace DicomViewer.IO
             return null;
         }
 
-        private Scan3D LoadEnhancedMRImage(DicomFile dicomFile)
+        private Scan LoadEnhancedMRImage(DicomFile dicomFile)
         {
             var volume = new VolumeData();
             var dataSet = dicomFile.Dataset;
@@ -304,10 +310,10 @@ namespace DicomViewer.IO
 
             var patient = GetPatient(dataSet);
 
-            return new Scan3D { Volume = volume, Patient = patient };
+            return new Scan { Volume = volume, Patient = patient };
         }
 
-        private Scan3D Load(List<DicomFile> files)
+        private Scan Load(List<DicomFile> files)
         {
             if (files.Count < 2) return null;
 
@@ -414,7 +420,7 @@ namespace DicomViewer.IO
 
             var patient = GetPatient(files.First().Dataset);
 
-            return new Scan3D { Volume = volume, Patient = patient };
+            return new Scan { Volume = volume, Patient = patient };
         }
 
         private Patient GetPatient(DicomDataset dataSet)

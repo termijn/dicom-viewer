@@ -22,7 +22,7 @@ namespace DicomViewer
     public partial class App : Application
     {
         private MainViewModel _viewModel;
-        private Scan3D _scan;
+        private Scan _scan;
         private ScanPresenter3D _presenter;
         private ImageVisual _imageVisual;
 
@@ -55,6 +55,7 @@ namespace DicomViewer
                 _viewModel.ImageViewer.Visuals.Add(_imageVisual);
                 _viewModel.ImageViewer.InteractorLeft = new ImageScrollInteractor(_imageVisual);
                 _viewModel.ImageViewer.Camera.Zoom = _scan.Volume.Slices.First().Height * _scan.Volume.Slices.First().PixelSpacing.Y;
+                _viewModel.SwitchTo2DCommand.Execute(null);
             });
         }
 
@@ -101,13 +102,14 @@ namespace DicomViewer
                 series = seriesExtractor.ExtractSeriesFromDirectory(path);
             } else
             {
-                series = seriesExtractor.ExtractSeriesFromSingleFile(path);
+                series = seriesExtractor.ExtractSeriesFromDicomDir(path);
+                //series = seriesExtractor.ExtractSeriesFromSingleFile(path);
             }
             
             _viewModel.Series = series;
             _viewModel.SelectedSeries = series.First();
 
-            Settings.Default.LastUsedFolder = Path.GetDirectoryName(path);
+            Settings.Default.LastUsedFolder = path;
             Settings.Default.Save();
         }
 

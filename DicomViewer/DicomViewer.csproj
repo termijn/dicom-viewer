@@ -147,8 +147,7 @@
     <Compile Include="IO\DicomSeries.cs" />
     <Compile Include="IO\DicomSeriesExtractor.cs" />
     <Compile Include="IO\DicomSopClasses.cs" />
-    <Compile Include="IO\Scan2D.cs" />
-    <Compile Include="IO\Scan3D.cs" />
+    <Compile Include="IO\Scan.cs" />
     <Compile Include="Presentation\ComboBoxItemTemplateSelector.cs" />
     <Compile Include="Presentation\ImageViewerViewModel.cs" />
     <Compile Include="Presentation\ImageViewer.xaml.cs">

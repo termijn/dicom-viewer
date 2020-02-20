@@ -2,7 +2,7 @@
 
 namespace DicomViewer.IO
 {
-    public class Scan3D
+    public class Scan
     {
         public Patient Patient { get; set; }
         public VolumeData Volume { get; set; }

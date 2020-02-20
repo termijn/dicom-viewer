@@ -18,7 +18,7 @@ namespace DicomViewer.Presentation
             _volumeViewerViewModel = volumeViewerViewModel;
         }
 
-        public void Present(Scan3D scan)
+        public void Present(Scan scan)
         {
             _mainViewModel.Patient = scan.Patient;
 
