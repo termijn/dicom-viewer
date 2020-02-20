@@ -11,12 +11,21 @@ namespace Entities
         {
             SetPixels(pixels);
             IsSigned = false;
+            BytesPerPixel = 2;
         }
 
         public ImageData(short[] pixels)
         {
             SetPixels(pixels);
             IsSigned = true;
+            BytesPerPixel = 2;
+        }
+
+        public ImageData(byte[] data)
+        {
+            SetPixels(data);
+            IsSigned = false;
+            BytesPerPixel = 1;
         }
 
         public Vector3 PositionPatient { get; set; } = new Vector3();
@@ -30,6 +39,8 @@ namespace Entities
         public bool DefaultWindowingAvailable { get; set; } = false;
         public double WindowWidth { get; set; }
         public double WindowLevel { get; set; }
+
+        public int BytesPerPixel { get; }
 
         public Vector3 CenterPatient
         {
@@ -45,7 +56,7 @@ namespace Entities
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public Spacing2 PixelSpacing { get; set; } = new Spacing2();
+        public Spacing2 PixelSpacing { get; set; } = new Spacing2 { X = 1, Y = 1 };
 
         public Vector3 SizePatient
         {

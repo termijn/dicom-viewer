@@ -28,6 +28,7 @@ vtkMemoryImageReader::~vtkMemoryImageReader()
 
 void vtkMemoryImageReader::SetImages(
     void ** images,
+	int bytesPerPixel,
     int width,
     int height,
     int numberOfImages,
@@ -37,6 +38,7 @@ void vtkMemoryImageReader::SetImages(
     double pixelSpacingY)
 {
     this->images = images;
+	this->bytesPerPixel = bytesPerPixel;
     this->width = width;
     this->height = height;
     this->numberOfImages = numberOfImages;
@@ -64,35 +66,70 @@ int vtkMemoryImageReader::RequestData(vtkInformation *, vtkInformationVector **,
 
 void vtkMemoryImageReader::Execute(vtkImageData * output)
 {
-    output->SetDimensions(width, height, numberOfImages);
-    output->SetScalarType(VTK_SHORT, GetOutputInformation(0));
-    output->SetSpacing(pixelSpacingX, pixelSpacingY, 1);
-    output->SetOrigin(-(width * pixelSpacingX) / 2, -(height * pixelSpacingY) / 2, -numberOfImages / 2);
-    output->SetNumberOfScalarComponents(1, GetOutputInformation(0));
-    output->AllocateScalars(VTK_SHORT, 1);
-    output->SetExtent(0, width - 1, 0, height - 1, 0, numberOfImages - 1);
+	output->SetDimensions(width, height, numberOfImages);
+	output->SetSpacing(pixelSpacingX, pixelSpacingY, 1);
+	output->SetOrigin(-(width * pixelSpacingX) / 2, -(height * pixelSpacingY) / 2, -numberOfImages / 2);
+	output->SetNumberOfScalarComponents(1, GetOutputInformation(0));
+	output->SetExtent(0, width - 1, 0, height - 1, 0, numberOfImages - 1);
 
-    short* p = (short*)output->GetScalarPointer();
+	int type = VTK_SHORT;
+	if (bytesPerPixel == 1) 
+	{
+		type = VTK_UNSIGNED_CHAR;
+	}
+    
+    output->SetScalarType(type, GetOutputInformation(0));    
+    output->AllocateScalars(type, 1);    
 
-    for (int y = 0; y < numberOfImages; y++)
-    {
-        for (int z = 0; z < height; z++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                long offset = z * width + x;
-                long storedValue;
-                if (false) //isSigned
-                {
-                    storedValue = ((long) *((short*)images[y] + offset));
-                }
-                else
-                {
-                    storedValue = ((long) *((unsigned short*)images[y] + offset));
-                }
-                *p++ = (short)(rescaleSlope * storedValue) + rescaleIntercept;
-            }
-        }
-    }
+	if (bytesPerPixel == 2) 
+	{
+		unsigned short* p = (unsigned short*)output->GetScalarPointer();
+		Copy<unsigned short>((unsigned short**) images, p);
+	}
+	if (bytesPerPixel == 1)
+	{
+		unsigned char* p = (unsigned char*)output->GetScalarPointer();
+		Copy<unsigned char>((unsigned char**)images, p);
+	}      
+	//
+	//for (int y = 0; y < numberOfImages; y++)
+ //   {
+ //       for (int z = 0; z < height; z++)
+ //       {
+ //           for (int x = 0; x < width; x++)
+ //           {
+ //               long offset = z * width + x;
+ //               long storedValue;
+ //               if (false) //isSigned
+ //               {
+ //                   storedValue = ((long) *((short*)images[y] + offset));
+ //               }
+ //               else
+ //               {
+ //                   storedValue = ((long) *((unsigned short*)images[y] + offset));
+ //               }
+ //               *p++ = (short)(rescaleSlope * storedValue) + rescaleIntercept;
+ //           }
+ //       }
+ //   }
     output->Modified();
+}
+
+template<typename T>
+inline void vtkMemoryImageReader::Copy(T ** slices, T * destination)
+{
+	T* p = destination;
+	for (int y = 0; y < numberOfImages; y++)
+	{
+		for (int z = 0; z < height; z++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				long offset = z * width + x;
+				long storedValue;
+				storedValue = ((long) *((T*)images[y] + offset));
+				*p++ = (short)(rescaleSlope * storedValue) + rescaleIntercept;
+			}
+		}
+	}
 }

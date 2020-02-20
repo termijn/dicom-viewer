@@ -154,8 +154,7 @@ namespace DicomViewer.IO
 
         private Scan Load(DicomFile dicomFile)
         {
-            var file = dicomFile.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
-            var dataSet = file.Dataset;
+            var dataSet = dicomFile.Dataset;
             var sopclass = dataSet.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
 
             if (sopclass == DicomSopClasses.XA3DImageStorageSopClass)
@@ -165,6 +164,14 @@ namespace DicomViewer.IO
             else if (sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass)
             {
                 return LoadEnhancedMRImage(dicomFile);
+            }
+            else if (sopclass == DicomSopClasses.MRImageStorageSopClass)
+            {
+                return Load(new List<DicomFile> { dicomFile });
+            }
+            else if (sopclass == DicomSopClasses.XRayAngiographicImageStorageSopClass)
+            {
+                return Load(new List<DicomFile> { dicomFile });
             }
             return null;
         }
@@ -240,7 +247,7 @@ namespace DicomViewer.IO
 
         private Scan Load(List<DicomFile> files)
         {
-            if (files.Count < 2) { return null; }
+            if (files.Count == 0) { return null; }
 
             var volume = new VolumeData();
 
@@ -257,7 +264,8 @@ namespace DicomViewer.IO
                 if (
                     sopclass == DicomSopClasses.CTImageStorageSopClass ||
                     sopclass == DicomSopClasses.MRImageStorageSopClass ||
-                    sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass)
+                    sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass ||
+                    sopclass == DicomSopClasses.XRayAngiographicImageStorageSopClass)
                 {
                     var dicomPixelData = DicomPixelData.Create(dataSet);
                     var nrFrames = dicomPixelData.NumberOfFrames;
@@ -274,19 +282,25 @@ namespace DicomViewer.IO
                         volume.Slices.Add(image);
 
                         var dicomPixelSpacing = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.PixelSpacing);
-                        image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
-                        image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
+                        if (dicomPixelSpacing != null)
+                        {
+                            image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
+                            image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
+                        }                        
 
                         var dicomPositionPatient = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImagePositionPatient);
-                        image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
-                        image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
-                        image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+                        if (dicomPositionPatient != null)
+                        {
+                            image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
+                            image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
+                            image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+                        }                        
 
                         var dicomOrientationPatient = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImageOrientationPatient);
                         GetImageOrientationPatient(image, dicomOrientationPatient);
 
-                        image.Intercept = dataSet.GetValue<double>(DicomTag.RescaleIntercept, 0);
-                        image.Slope = dataSet.GetValue<double>(DicomTag.RescaleSlope, 0);
+                        image.Intercept = dataSet.GetValueOrDefault<double>(DicomTag.RescaleIntercept, 0, 0);
+                        image.Slope = dataSet.GetValueOrDefault<double>(DicomTag.RescaleSlope, 0, 1);
 
                         var range = pixelData.GetMinMax();
 
@@ -372,6 +386,10 @@ namespace DicomViewer.IO
             else if (pixelData is GrayscalePixelDataS16 grayscalePixelDataS16)
             {
                 image = new ImageData(grayscalePixelDataS16.Data);
+            }
+            else if (pixelData is GrayscalePixelDataU8 grayscalePixelDataU8)
+            {
+                image = new ImageData(grayscalePixelDataU8.Data);
             }
             return image;
         }

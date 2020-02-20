@@ -136,7 +136,8 @@ namespace DicomViewer.IO
                 sopclass == DicomSopClasses.CTImageStorageSopClass ||
                 sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass ||
                 sopclass == DicomSopClasses.MRImageStorageSopClass ||
-                sopclass == DicomSopClasses.XA3DImageStorageSopClass;
+                sopclass == DicomSopClasses.XA3DImageStorageSopClass ||
+                sopclass == DicomSopClasses.XRayAngiographicImageStorageSopClass;
         }
 
         public bool Is3DCapableSopClass(DicomFile file)

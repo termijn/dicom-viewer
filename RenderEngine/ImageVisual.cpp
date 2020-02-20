@@ -38,7 +38,7 @@ RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageD
     }
 
     auto firstImage = images[0];
-    reader->SetImages(pixels, width, height, images->Count, firstImage->Intercept, firstImage->Slope, firstImage->PixelSpacing->X, firstImage->PixelSpacing->Y);
+    reader->SetImages(pixels, firstImage->BytesPerPixel, width, height, images->Count, firstImage->Intercept, firstImage->Slope, firstImage->PixelSpacing->X, firstImage->PixelSpacing->Y);
     reader->Update();
 
     privates->image = vtkSmartPointer<vtkImageSlice>::New();

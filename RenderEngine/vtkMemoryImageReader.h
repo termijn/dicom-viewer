@@ -13,6 +13,7 @@ public:
 
     void SetImages(
         void ** images,
+		int bytesPerPixel,
         int width,
         int height,
         int numberOfImages,
@@ -35,7 +36,11 @@ private:
     vtkMemoryImageReader(const vtkMemoryImageReader&) = delete;
     void operator=(const vtkMemoryImageReader&) = delete;
 
+	template <typename T>
+	void Copy(T** slices, T* destination);
+
     void** images;
+	int bytesPerPixel;
     int width;
     int height;
     int numberOfImages;
@@ -44,4 +49,3 @@ private:
     double pixelSpacingX;
     double pixelSpacingY;
 };
-
