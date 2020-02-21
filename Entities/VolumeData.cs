@@ -15,7 +15,7 @@ namespace Entities
         /// z => height of a single slice in pixels
         /// </summary>
         public Dimensions3 Dimensions { get; set; } = new Dimensions3();
-        public Matrix TransformationToPatient = new Matrix();
+        public Matrix TransformationToPatient { get; set; } = new Matrix();
 
         public Vector3 CenterInVoxelSpace
         {

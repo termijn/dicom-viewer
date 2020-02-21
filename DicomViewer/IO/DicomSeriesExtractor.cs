@@ -10,9 +10,14 @@ namespace DicomViewer.IO
 {
     public class DicomSeriesExtractor
     {
-        private List<DicomSeries> _series = new List<DicomSeries>();
+        private readonly List<DicomSeries> _series = new List<DicomSeries>();
 
-        public IEnumerable<Series> ExtractSeriesFromDicomDir(string path, bool generateMissingThumbnails = false)
+        public IEnumerable<Series> ExtractSeriesFromDicomDir(string path)
+        {
+            return ExtractSeriesFromDicomDir(path, false);
+        }
+
+        public static IEnumerable<Series> ExtractSeriesFromDicomDir(string path, bool generateMissingThumbnails)
         {
             var result = new List<DicomSeries>();
             if (!DicomFile.HasValidHeader(path))
@@ -28,7 +33,7 @@ namespace DicomViewer.IO
                     foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection)
                     {
                         var seriesRecordType = seriesRecord.GetSingleValueOrDefault(DicomTag.DirectoryRecordType, string.Empty);
-                        if (seriesRecordType != "SERIES") continue;
+                        if (seriesRecordType != "SERIES") { continue; }
                         var series = new DicomSeries
                         {
                             SeriesInstanceUid = seriesRecord.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, ""),
@@ -49,7 +54,7 @@ namespace DicomViewer.IO
                         foreach (var imageRecord in seriesRecord.LowerLevelDirectoryRecordCollection)
                         {
                             var imageRecordType = imageRecord.GetSingleValueOrDefault(DicomTag.DirectoryRecordType, string.Empty);
-                            if (imageRecordType != "IMAGE") continue;
+                            if (imageRecordType != "IMAGE") { continue; }
 
                             var values = imageRecord.GetValues<string>(DicomTag.ReferencedFileID);
                             var relativePath = string.Join(@"\", values);
@@ -99,7 +104,7 @@ namespace DicomViewer.IO
         public void ProcessFile(DicomFile file)
         {
             string seriesInstanceUid = file.Dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty);
-            if (string.IsNullOrEmpty(seriesInstanceUid)) return;
+            if (string.IsNullOrEmpty(seriesInstanceUid)) { return; }
 
             CreateSeries(file, seriesInstanceUid);
         }
@@ -129,7 +134,7 @@ namespace DicomViewer.IO
             series.Files.Add(file);
         }
 
-        public bool IsSupportedSopClass(DicomFile file)
+        public static bool IsSupportedSopClass(DicomFile file)
         {
             var sopclass = file.Dataset.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
             return
@@ -140,7 +145,7 @@ namespace DicomViewer.IO
                 sopclass == DicomSopClasses.XRayAngiographicImageStorageSopClass;
         }
 
-        public bool Is3DCapableSopClass(DicomFile file)
+        public static bool Is3DCapableSopClass(DicomFile file)
         {
             var sopclass = file.Dataset.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
 

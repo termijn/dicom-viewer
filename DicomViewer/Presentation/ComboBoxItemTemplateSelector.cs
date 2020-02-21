@@ -22,14 +22,20 @@ namespace DicomViewer.Presentation
                 {
                     ComboBox cbo = parent as ComboBox;
                     if (cbo != null)
+                    {
                         selected = true;
+                    }
                 }
             }
 
             if (selected)
+            {
                 return SelectedItemTemplate;
+            }
             else
+            {
                 return ItemTemplate;
+            }
         }
     }
 }

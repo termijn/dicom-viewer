@@ -26,7 +26,7 @@ namespace Viewing
 
         public bool MouseMove(Point position, Viewport viewport)
         {
-            if (!_isMouseDown) return false;
+            if (!_isMouseDown) { return false; }
 
             var delta = position - _beginPosition;
             var angleX = -Double.DegreesToRadians((delta.X / 4));

@@ -19,12 +19,11 @@ namespace Entities
 
         protected virtual void Dispose(bool disposing)
         {
-            if (IsDisposed) return;
-            if (disposing)
+            if (disposing && !IsDisposed)
             {
                 OnDispose();
+                IsDisposed = true;
             }
-            IsDisposed = true;
         }
 
         protected virtual void OnDispose() { }

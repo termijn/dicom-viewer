@@ -23,13 +23,14 @@ class RenderEngine::ViewportRendererImpl
 {
 public:
     ViewportRendererImpl()
+		: renderer(vtkSmartPointer<vtkOpenGLRenderer>::New())
+		, renderWindow(vtkSmartPointer<vtkRenderWindow>::New())
+		, windowToImageFilter(vtkSmartPointer<vtkWindowToImageFilter>::New())
     {
         /*vtkSmartPointer<vtkWin32OutputWindow> outputWindow = vtkSmartPointer<vtkWin32OutputWindow>::New();
         outputWindow->SetSendToStdErr(true);
         vtkOutputWindow::SetInstance(outputWindow);*/
-
-        renderer = vtkSmartPointer<vtkOpenGLRenderer>::New();
-        renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+        
         renderWindow->AddRenderer(this->renderer);
         renderWindow->DebugOn();
 
@@ -37,7 +38,6 @@ public:
 
         renderWindow->SetSize(400, 400);
 
-        windowToImageFilter = vtkSmartPointer<vtkWindowToImageFilter>::New();
         windowToImageFilter->SetInputBufferTypeToRGBA();
         windowToImageFilter->SetInput(this->renderWindow);
 

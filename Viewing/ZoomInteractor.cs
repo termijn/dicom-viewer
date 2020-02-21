@@ -24,7 +24,7 @@ namespace Viewing
 
         public bool MouseMove(Point position, Viewport viewport)
         {
-            if (!isDragging) return false;
+            if (!isDragging) { return false; }
             double deltaY = (position - _startPosition).Y;
             camera.Zoom = _startFactor * Math.Pow(2, 0.01 * (deltaY));
             return true;

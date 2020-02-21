@@ -42,7 +42,7 @@ namespace DicomViewer.Presentation
 
         public void ActivateWindowing()
         {
-            InteractorLeft = new ImageWindowingInteractor() { ImageVisual = ImageVisual };
+            InteractorLeft = new ImageWindowingInteractor { ImageVisual = ImageVisual };
         }
 
         public void ActivateZoom()

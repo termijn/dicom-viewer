@@ -9,6 +9,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using RenderEngine;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -33,7 +34,7 @@ namespace DicomViewer
         }
         protected override void OnActivated(EventArgs e)
         {
-            if (_viewModel != null) return;
+            if (_viewModel != null) { return; }
             _viewModel = (MainViewModel)MainWindow.DataContext;
 
             _viewModel.LoadDatasetCommand = new BindableCommand(LoadFolder);
@@ -49,10 +50,9 @@ namespace DicomViewer
         {
             _viewModel.ImageViewer.Visuals.Clear();
             DisposeScan();
-            if (_viewModel.SelectedSeries == null) return;
+            if (_viewModel.SelectedSeries == null) { return; }
 
-            var loader = new DicomVolumeLoader();
-            var dicomSeries = _viewModel.SelectedSeries as DicomSeries;
+            var loader = new DicomVolumeLoader();            
             _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);
             _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
             _presenter.Present(_scan);
@@ -97,8 +97,6 @@ namespace DicomViewer
         {
             _viewModel.ImageViewer.Visuals.Clear();
 
-            var loader = new DicomVolumeLoader();
-
             DisposeScan();
 
             var seriesExtractor = new DicomSeriesExtractor();
@@ -109,7 +107,7 @@ namespace DicomViewer
             }
             else
             {
-                if (string.Compare(Path.GetFileName(path), "DICOMDIR", true) == 0)
+                if (string.Compare(Path.GetFileName(path), "DICOMDIR", true, CultureInfo.InvariantCulture) == 0)
                 {
                     series = seriesExtractor.ExtractSeriesFromDicomDir(path);
                 }

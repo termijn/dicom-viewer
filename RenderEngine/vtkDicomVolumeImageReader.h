@@ -38,13 +38,13 @@ private:
 	void operator=(const vtkVolumeMemoryReader&) = delete;
 
     void ** slices;
-    int xSize;
-    int ySize;
-    int zSize;
-    bool isSigned;
-    double rescaleIntercept;
-    double rescaleSlope;
-	double xSpacing;
-	double ySpacing;
-	double zSpacing;
+    int xSize = 0;
+    int ySize = 0;
+    int zSize = 0;
+	bool isSigned = false;
+    double rescaleIntercept = 0;
+    double rescaleSlope = 1;
+	double xSpacing = 1;
+	double ySpacing = 1;
+	double zSpacing = 1;
 };

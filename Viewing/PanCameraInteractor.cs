@@ -24,7 +24,10 @@ namespace Viewing
 
         public bool MouseMove(Point position, Viewport viewport)
         {
-            if (!_isMouseDown) return false;
+            if (!_isMouseDown)
+            {
+                return false;
+            }
 
             var delta = (position - _initialPosition);
             var viewportHeightInMm = _camera.Zoom * 2;

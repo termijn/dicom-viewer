@@ -10,12 +10,7 @@ namespace Viewing
 
         private Point beginPosition;
         private double beginWidth;
-        private double beginLevel;
-
-        public WindowingInteractor()
-        {
-            
-        }
+        private double beginLevel;        
 
         public VolumeVisual VolumeVisual { get; set; }
 

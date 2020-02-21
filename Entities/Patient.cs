@@ -63,7 +63,7 @@ namespace Entities
 
         public void ParseDicomDateOfBirth(string date)
         {
-            if (date.Length != 8) return;
+            if (date.Length != 8) { return; }
 
             int year = 0;
             int month = 0;

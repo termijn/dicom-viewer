@@ -73,6 +73,9 @@ namespace Entities
                     Remove(_cachedItems, e.OldStartingIndex);
                     Add(_inputCollection, e.NewStartingIndex);
                     break;
+                default:
+                    // Not supported
+                    break;
             }
         }
 
@@ -80,13 +83,17 @@ namespace Entities
         {
             List<T> itemsToRemove = (from object item in items select (T)item).ToList();
 
+            var itemIndex = index;
             // If index is -1, then entire collection is being removed by repeatedly
             // removing the first element
-            if (index == -1) index = 0;
+            if (itemIndex == -1)
+            {
+                itemIndex = 0;
+            }
 
             foreach (T itemToRemove in itemsToRemove)
             {
-                _itemRemovedCallback(itemToRemove, index);
+                _itemRemovedCallback(itemToRemove, itemIndex);
                 _cachedItems.Remove(itemToRemove);
             }
         }

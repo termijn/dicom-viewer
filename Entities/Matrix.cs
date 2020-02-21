@@ -54,7 +54,7 @@ namespace Entities
         {
             var rotation = new Matrix();
 
-            if (Double.EqualsZero(axis.SqrLength())) return new Matrix(); 
+            if (Double.EqualsZero(axis.SqrLength())) { return  new Matrix(); }
             axis = axis.Normalized();
 
             double t = 1.0 - cosAngle;
@@ -223,29 +223,32 @@ namespace Entities
             };
         }
 
-        public void GetAnglesZYX(out double az, out double ay, out double ax)
+        public OrientationXYZ GetAnglesZYX()
         {
-            ay = -Math.Asin(this[2, 0]);  //or ay = pi - arcsin(At(2,0)), both eventually deliver the same rotation matrix
-            double cosAy = Math.Cos(ay);
+            var result = new OrientationXYZ();
+
+            result.Y = -Math.Asin(this[2, 0]);  //or ay = pi - arcsin(At(2,0)), both eventually deliver the same rotation matrix
+            double cosAy = Math.Cos(result.Y);
             if (Double.EqualsZero(cosAy))  //ay = +pi/2 or ay= -pi/2
             {
-                ax = 0.0;  //set ax to zero, so it does not matter whether ay = +pi/2 or ay= -pi/2
-                az = -Math.Asin(this[0, 1]);
+                result.X = 0.0;  //set ax to zero, so it does not matter whether ay = +pi/2 or ay= -pi/2
+                result.Z = -Math.Asin(this[0, 1]);
                 double cosAz = this[1, 1];
-                if (cosAz < 0.0) { az = Math.PI - az; }
+                if (cosAz < 0.0) { result.Z = Math.PI - result.Z; }
             }
             else
             {
                 double divCosAy = 1.0 / cosAy;
 
-                ax = Math.Asin(this[2, 1] * divCosAy);
+                result.X = Math.Asin(this[2, 1] * divCosAy);
                 double cosAx = this[2, 2] * divCosAy;
-                if (cosAx < 0.0) { ax = Math.PI - ax; }
+                if (cosAx < 0.0) { result.X = Math.PI - result.X; }
 
-                az = Math.Asin(this[1, 0] * divCosAy);
+                result.Z = Math.Asin(this[1, 0] * divCosAy);
                 double cosAz = this[0, 0] * divCosAy;
-                if (cosAz < 0.0) { az = Math.PI - az; }
+                if (cosAz < 0.0) { result.Z = Math.PI - result.Z; }
             }
+            return result;
         }
 
         public static Vector3 operator *(Vector3 v, Matrix m)

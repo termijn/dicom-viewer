@@ -120,7 +120,7 @@ namespace Viewing
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            if (ActualWidth == 0 || ActualHeight == 0) return;
+            if (ActualWidth == 0 || ActualHeight == 0) { return; }
 
             int width = (int)ActualWidth;
             int height = (int)ActualHeight;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-namespace DicomViewer.Presentation
+﻿namespace DicomViewer.Presentation
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

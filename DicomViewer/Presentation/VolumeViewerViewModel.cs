@@ -33,7 +33,7 @@ namespace DicomViewer.Presentation
 
         public void ActivateScroll()
         {
-            
+            // Scroll is not available for volume viewing
         }
 
         public void ActivateWindowing()

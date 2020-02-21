@@ -14,10 +14,10 @@ namespace Entities
             _axis = axis.Normalized();
         }
 
-        public int Compare(ImageData i0, ImageData i1)
+        public int Compare(ImageData x, ImageData y)
         {
-            Vector3 v0 = i0.PositionPatient;
-            Vector3 v1 = i1.PositionPatient;
+            Vector3 v0 = x.PositionPatient;
+            Vector3 v1 = y.PositionPatient;
 
             Vector3 delta = (v1 - v0).Normalized();
             var dot = delta.Dot(_axis);

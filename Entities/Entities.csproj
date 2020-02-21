@@ -51,6 +51,7 @@
     <Compile Include="Double.cs" />
     <Compile Include="ImageData.cs" />
     <Compile Include="Matrix.cs" />
+    <Compile Include="OrientationXYZ.cs" />
     <Compile Include="Patient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertySubscription.cs" />
