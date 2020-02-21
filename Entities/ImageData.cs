@@ -33,10 +33,10 @@ namespace Entities
         public Vector3 XAxisPatient { get; set; } = new Vector3();
         public Vector3 YAxisPatient { get; set; } = new Vector3();
 
-        public double Intercept { get; set; } = 0;
+        public double Intercept { get; set; }
         public double Slope { get; set; } = 1;
 
-        public bool DefaultWindowingAvailable { get; set; } = false;
+        public bool DefaultWindowingAvailable { get; set; }
         public double WindowWidth { get; set; }
         public double WindowLevel { get; set; }
 

@@ -31,7 +31,7 @@ namespace DicomViewer.IO
             return null;
         }
 
-        private Scan LoadXA3DImageStorage(DicomFile dicomFile)
+        private static Scan LoadXA3DImageStorage(DicomFile dicomFile)
         {
             var volume = new VolumeData();
             var dataSet = dicomFile.Dataset;
@@ -176,7 +176,7 @@ namespace DicomViewer.IO
             return null;
         }
 
-        private Scan LoadEnhancedMRImage(DicomFile dicomFile)
+        private static Scan LoadEnhancedMRImage(DicomFile dicomFile)
         {
             var volume = new VolumeData();
             var dataSet = dicomFile.Dataset;
@@ -192,7 +192,7 @@ namespace DicomViewer.IO
                 var pixelData = PixelDataFactory.Create(dicomPixelData, i);
 
                 ImageData image = CreateImageData(pixelData);
-                if (image == null) continue;
+                if (image == null) { continue; }
 
                 image.Width = dicomPixelData.Width;
                 image.Height = dicomPixelData.Height;
@@ -223,7 +223,6 @@ namespace DicomViewer.IO
                 ReadPixelTransformation(image, frameDataSet, functionalGroupPerFrameDataSet);
             }
 
-            var firstDataset = dataSet;
             var firstImage = volume.Slices.First();
             var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
             
@@ -245,13 +244,11 @@ namespace DicomViewer.IO
             return new Scan { Volume = volume, Patient = patient };
         }
 
-        private Scan Load(List<DicomFile> files)
+        private static Scan Load(List<DicomFile> files)
         {
             if (files.Count == 0) { return null; }
 
             var volume = new VolumeData();
-
-            var spacing = new double[3];
 
             foreach (var originalFile in files)
             {
