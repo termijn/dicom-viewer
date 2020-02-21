@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AngleAxis.cs" />
     <Compile Include="Bindable.cs" />
     <Compile Include="CollectionObserver.cs" />
     <Compile Include="Dimensions3.cs" />

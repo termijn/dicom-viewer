@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace DicomViewer.IO
 {
-    public class DicomVolumeLoader
+    public static class DicomVolumeLoader
     {
-        public Scan Load(DicomSeries series)
+        public static Scan Load(DicomSeries series)
         {
             if (series.FileNames.Count == 1)
             {
@@ -78,7 +78,6 @@ namespace DicomViewer.IO
                 ReadPixelTransformation(image, frameDataSet, functionalGroupPerFrameDataSet);
             }
 
-            var firstDataset = dataSet;
             var firstImage = volume.Slices.First();
             var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
             
@@ -152,7 +151,7 @@ namespace DicomViewer.IO
             }
         }
 
-        private Scan Load(DicomFile dicomFile)
+        private static Scan Load(DicomFile dicomFile)
         {
             var dataSet = dicomFile.Dataset;
             var sopclass = dataSet.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
@@ -272,7 +271,7 @@ namespace DicomViewer.IO
                         var pixelData = PixelDataFactory.Create(dicomPixelData, i);
 
                         ImageData image = CreateImageData(pixelData);
-                        if (image == null) continue;
+                        if (image == null) { continue; }
 
                         image.Width = dicomPixelData.Width;
                         image.Height = dicomPixelData.Height;

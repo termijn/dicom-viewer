@@ -27,12 +27,12 @@ namespace Entities
             set { Elements[y * N + x] = value; }
         }
 
-        public static Matrix Translation(Vector3 translation)
+        public static Matrix Translation(Vector3 translationVector)
         {
             var result = new Matrix();
-            result[0, N - 1] = translation.X;
-            result[1, N - 1] = translation.Y;
-            result[2, N - 1] = translation.Z;
+            result[0, N - 1] = translationVector.X;
+            result[1, N - 1] = translationVector.Y;
+            result[2, N - 1] = translationVector.Z;
             return result;
         }
         
@@ -179,16 +179,18 @@ namespace Entities
             }
         }
 
-        public void GetAngleAxis(out double angle, out double x, out double y, out double z)
+        public AngleAxis GetAngleAxis()
         {
+            var result = new AngleAxis();
             double norm = 
                 Math.Sqrt(Square(this[2, 1] - this[1, 2]) + Square(this[0, 2] - this[2, 0]) + Square(this[1, 0] - this[0, 1]));
 
-            if (!Double.EqualsZero(norm)) { norm = 1.0 / norm; } 
-            angle = Math.Acos(0.5 * (this[0, 0] + this[1, 1] + this[2, 2] - 1.0));
-            x = (this[2, 1] - this[1, 2]) * norm;
-            y = (this[0, 2] - this[2, 0]) * norm;
-            z = (this[1, 0] - this[0, 1]) * norm;
+            if (!Double.EqualsZero(norm)) { norm = 1.0 / norm; }
+            result.Angle = Math.Acos(0.5 * (this[0, 0] + this[1, 1] + this[2, 2] - 1.0));
+            result.Axis.X = (this[2, 1] - this[1, 2]) * norm;
+            result.Axis.Y = (this[0, 2] - this[2, 0]) * norm;
+            result.Axis.Z = (this[1, 0] - this[0, 1]) * norm;
+            return result;
         }
 
         public static Matrix operator *(Matrix m1, Matrix m2)

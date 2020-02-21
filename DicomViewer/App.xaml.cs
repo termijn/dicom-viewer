@@ -52,8 +52,7 @@ namespace DicomViewer
             DisposeScan();
             if (_viewModel.SelectedSeries == null) { return; }
 
-            var loader = new DicomVolumeLoader();            
-            _scan = loader.Load(_viewModel.SelectedSeries as DicomSeries);
+            _scan = DicomVolumeLoader.Load(_viewModel.SelectedSeries as DicomSeries);
             _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
             _presenter.Present(_scan);
 
