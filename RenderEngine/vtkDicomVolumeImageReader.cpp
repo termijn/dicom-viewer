@@ -17,6 +17,16 @@
 vtkStandardNewMacro(vtkVolumeMemoryReader);
 
 vtkVolumeMemoryReader::vtkVolumeMemoryReader()
+	: slices(nullptr)
+	, xSize(0)
+	, ySize(0)
+	, zSize(0)
+	, isSigned(false)
+	, rescaleIntercept(0)
+	, rescaleSlope(1)
+	, xSpacing(1)
+	, ySpacing(1)
+	, zSpacing(1)
 {
     this->SetNumberOfInputPorts(0);
 }

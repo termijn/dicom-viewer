@@ -17,6 +17,15 @@
 vtkStandardNewMacro(vtkMemoryImageReader);
 
 vtkMemoryImageReader::vtkMemoryImageReader()
+	: images(nullptr)
+	, bytesPerPixel(1)
+	, width(0)
+	, height(0)
+	, numberOfImages(0)
+	, rescaleIntercept(0)
+	, rescaleSlope(1)
+	, pixelSpacingX(1)
+	, pixelSpacingY(1)
 {
     this->SetNumberOfInputPorts(0);
 }

@@ -36,5 +36,4 @@
   * Build using Visual Studio 2017 or newer.
   * Uses VTK for visualization.
   * Install VTK toolkit and set VTK_PATH environment variable to installed location (e.g. VTK_PATH=C:\Program Files\VTK).
-  * Other dependencies are automatically installed from nuget.org upon first build. 
-
+  * Other dependencies are automatically installed from nuget.org upon first build.
