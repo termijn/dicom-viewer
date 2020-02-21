@@ -98,21 +98,20 @@ namespace DicomViewer
 
             DisposeScan();
 
-            var seriesExtractor = new DicomSeriesExtractor();
             IEnumerable<Series> series = null;
             if (Directory.Exists(path))
             {
-                series = seriesExtractor.ExtractSeriesFromDirectory(path);
+                series = DicomSeriesExtractor.ExtractSeriesFromDirectory(path);
             }
             else
             {
                 if (string.Compare(Path.GetFileName(path), "DICOMDIR", true, CultureInfo.InvariantCulture) == 0)
                 {
-                    series = seriesExtractor.ExtractSeriesFromDicomDir(path);
+                    series = DicomSeriesExtractor.ExtractSeriesFromDicomDir(path);
                 }
                 else
                 {
-                    series = seriesExtractor.ExtractSeriesFromSingleFile(path);
+                    series = DicomSeriesExtractor.ExtractSeriesFromSingleFile(path);
                 }
             }
             _viewModel.Series = series;

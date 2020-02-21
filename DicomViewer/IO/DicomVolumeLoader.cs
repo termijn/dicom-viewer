@@ -47,7 +47,7 @@ namespace DicomViewer.IO
                 var pixelData = PixelDataFactory.Create(dicomPixelData, i);
 
                 ImageData image = CreateImageData(pixelData);
-                if (image == null) continue;
+                if (image == null) { continue; }
 
                 image.Width = dicomPixelData.Width;
                 image.Height = dicomPixelData.Height;

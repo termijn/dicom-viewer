@@ -8,11 +8,9 @@ using Entities;
 
 namespace DicomViewer.IO
 {
-    public class DicomSeriesExtractor
+    public static class DicomSeriesExtractor
     {
-        private readonly List<DicomSeries> _series = new List<DicomSeries>();
-
-        public IEnumerable<Series> ExtractSeriesFromDicomDir(string path)
+        public static IEnumerable<Series> ExtractSeriesFromDicomDir(string path)
         {
             return ExtractSeriesFromDicomDir(path, false);
         }
@@ -79,44 +77,46 @@ namespace DicomViewer.IO
             return result;
         }
 
-        public IEnumerable<Series> ExtractSeriesFromSingleFile(string path)
+        public static IEnumerable<Series> ExtractSeriesFromSingleFile(string path)
         {
+            var seriesList = new List<DicomSeries>();
             var dicomFile = DicomFile.Open(path, FileReadOption.ReadLargeOnDemand);
-            ProcessFile(dicomFile);
-            PostProcessSeries();
-            return _series;
+            ProcessFile(dicomFile, seriesList);
+            PostProcessSeries(seriesList);
+            return seriesList;
         }
 
-        public IEnumerable<Series> ExtractSeriesFromDirectory(string path)
+        public static IEnumerable<Series> ExtractSeriesFromDirectory(string path)
         {
+            var seriesList = new List<DicomSeries>();
             var files = Directory.EnumerateFiles(path);
             var dicomFiles = files.Where(file => DicomFile.HasValidHeader(file));
             foreach(var file in dicomFiles)
             {
                 var dicomFile = DicomFile.Open(file, FileReadOption.ReadLargeOnDemand);
-                ProcessFile(dicomFile);
+                ProcessFile(dicomFile, seriesList);
             }
-            PostProcessSeries();
+            PostProcessSeries(seriesList);
             
-            return _series;
+            return seriesList;
         }
 
-        public void ProcessFile(DicomFile file)
+        public static void ProcessFile(DicomFile file, List<DicomSeries> seriesList)
         {
             string seriesInstanceUid = file.Dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty);
             if (string.IsNullOrEmpty(seriesInstanceUid)) { return; }
 
-            CreateSeries(file, seriesInstanceUid);
+            CreateSeries(file, seriesInstanceUid, seriesList);
         }
 
-        private void CreateSeries(DicomFile file, string seriesInstanceUid) 
+        private static void CreateSeries(DicomFile file, string seriesInstanceUid, List<DicomSeries> seriesList) 
         {            
             if (!IsSupportedSopClass(file))
             {
                 return;
             }
 
-            var series = _series.FirstOrDefault(s => s.SeriesInstanceUid == seriesInstanceUid);
+            var series = seriesList.FirstOrDefault(s => s.SeriesInstanceUid == seriesInstanceUid);
             if (series == null)
             {
                 var sopclass = file.Dataset.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
@@ -128,7 +128,7 @@ namespace DicomViewer.IO
                     SopClassUid = sopclass,
                     Number = seriesNumber   
                 };
-                _series.Add(series);
+                seriesList.Add(series);
             }
             series.FileNames.Add(file.File.Name);
             series.Files.Add(file);
@@ -177,9 +177,9 @@ namespace DicomViewer.IO
             }
         }
 
-        private void PostProcessSeries()
+        private static void PostProcessSeries(List<DicomSeries> seriesList)
         {
-            foreach (var series in _series)
+            foreach (var series in seriesList)
             {
                 var firstFile = series.Files.First();
 
