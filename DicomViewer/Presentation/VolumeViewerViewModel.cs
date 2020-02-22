@@ -4,14 +4,41 @@ using Viewing;
 
 namespace DicomViewer.Presentation
 {
-    public class VolumeViewerViewModel: Bindable, IInteractorActivator
+    public class VolumeViewerViewModel : Bindable, IInteractorActivator
     {
         private IMouseInteractor _interactorLeft;
         private IMouseInteractor _interactorRight;
+        private double _windowLevel;
+        private double _windowWidth;
 
         public VolumeViewerViewModel()
         {
             Tools = new ToolSelectorViewModel(this);
+            WindowLevel = 1000;
+            WindowWidth = 500;
+        }
+
+        public double WindowLevel
+        {
+            get => _windowLevel;
+            set  
+            {
+                if (SetProperty(ref _windowLevel, value))
+                {
+                    VolumeVisual?.SetWindowing(WindowLevel, WindowWidth);
+                }
+            }
+        }
+        public double WindowWidth
+        {
+            get => _windowWidth;
+            set
+            {
+                if (SetProperty(ref _windowWidth, value))
+                {
+                    VolumeVisual?.SetWindowing(WindowLevel, WindowWidth);
+                }
+            }
         }
 
         public VolumeVisual VolumeVisual { get; set; }

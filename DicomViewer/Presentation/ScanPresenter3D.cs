@@ -2,6 +2,7 @@
 using Entities;
 using RenderEngine;
 using System;
+using System.Linq;
 using Viewing;
 
 namespace DicomViewer.Presentation
@@ -33,6 +34,8 @@ namespace DicomViewer.Presentation
             _volumeViewerViewModel.InteractorRight = new PanCameraInteractor(_volumeViewerViewModel.Camera);
             _volumeViewerViewModel.VolumeVisual = _visual;
             _volumeViewerViewModel.Tools.IsRotateActive = true;
+            _volumeViewerViewModel.WindowLevel = scan.Volume.Slices.First().WindowLevel;
+            _volumeViewerViewModel.WindowWidth = scan.Volume.Slices.First().WindowWidth;
         }
 
         protected override void OnDispose()

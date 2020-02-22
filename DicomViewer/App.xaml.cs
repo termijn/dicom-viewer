@@ -61,6 +61,7 @@ namespace DicomViewer
             _viewModel.ImageViewer.Visuals.Add(_imageVisual);
             _viewModel.ImageViewer.Tools.IsScrollActive = true;
             _viewModel.ImageViewer.Camera.Zoom = _scan.Volume.Slices.First().Height * _scan.Volume.Slices.First().PixelSpacing.Y * 0.5;
+            _viewModel.ImageViewer.Camera.ViewportPan = new Matrix();
             _viewModel.SwitchTo2DCommand.Execute(null);
         }
 

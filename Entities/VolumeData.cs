@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Entities
 {
-    public class VolumeData
+    public class ImageSet
     {
         public List<ImageData> Slices { get; set; } = new List<ImageData>();
 

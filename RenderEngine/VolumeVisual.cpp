@@ -27,7 +27,7 @@ struct RenderEngine::VolumeVisualPrivates
 };
 
 
-VolumeVisual::VolumeVisual(VolumeData ^ volumeData)
+VolumeVisual::VolumeVisual(ImageSet ^ volumeData)
 	: privates(new VolumeVisualPrivates())
 {
 	auto ptrs = volumeData->GetSlicePointers();
@@ -175,9 +175,11 @@ void VolumeVisual::SetWindowing(double windowLevel, double windowWidth)
 
 	double min = windowLevel - windowWidth / 2;
 	double max = windowLevel + windowWidth / 2;
-	privates->volumeScalarOpacity->AddPoint(0, 0.00, 0.5, 0);
+	privates->volumeScalarOpacity->AddPoint(-2000, 0.00, 0.5, 0);
 	privates->volumeScalarOpacity->AddPoint(min, 0.0,0.5, 0.5);
 	privates->volumeScalarOpacity->AddPoint(max, 1, 0.5, 0);
+
+	Invalidated();
 }
 
 double RenderEngine::VolumeVisual::GetWindowLevel()

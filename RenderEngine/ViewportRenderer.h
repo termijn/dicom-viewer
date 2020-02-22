@@ -26,7 +26,6 @@ namespace RenderEngine {
         void SetSize(int width, int height);
         void SetZoom(double factor);        
         void SetCameraTransformation(Matrix^ matrix);
-
 	internal:
 		vtkRenderer* GetRenderer();
 

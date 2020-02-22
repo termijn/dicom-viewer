@@ -145,12 +145,19 @@ namespace Viewing
 
         private void OnVisualAdded(IVisual visual)
         {
+            visual.Invalidated += OnVisualInvalidated;
             visual.AddTo(ViewportRenderer);
+            InvalidateVisual();
+        }
+
+        private void OnVisualInvalidated()
+        {
             InvalidateVisual();
         }
 
         private void OnVisualRemoved(IVisual visual)
         {
+            visual.Invalidated -= OnVisualInvalidated;
             visual.RemoveFrom(ViewportRenderer);
             InvalidateVisual();
         }

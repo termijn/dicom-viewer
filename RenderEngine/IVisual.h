@@ -8,5 +8,6 @@ namespace RenderEngine {
 	{
 		virtual void AddTo(ViewportRenderer^ viewport);
 		virtual void RemoveFrom(ViewportRenderer^ viewport);
+		event System::Action^ Invalidated;
 	};
 }

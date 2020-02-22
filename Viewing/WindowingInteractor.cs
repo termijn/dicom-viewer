@@ -16,6 +16,7 @@ namespace Viewing
 
         public void MouseDown(Point position, Viewport viewport)
         {
+            if (VolumeVisual == null) { return; }
             isDown = true;
 
             beginLevel = VolumeVisual.GetWindowLevel();

@@ -12,7 +12,7 @@ namespace RenderEngine
 	public ref class VolumeVisual: public IVisual
 	{
 	public:
-		VolumeVisual(VolumeData^ volumeData);
+		VolumeVisual(ImageSet^ volumeData);
 		~VolumeVisual();
 		!VolumeVisual();
 
@@ -22,6 +22,7 @@ namespace RenderEngine
 		void SetWindowing(double windowLevel, double windowWidth);
 		double GetWindowLevel();
 		double GetWindowWidth();
+		virtual event System::Action ^ Invalidated;
 	private:
 		VolumeVisualPrivates* privates;
 	};

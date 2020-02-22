@@ -33,7 +33,7 @@ namespace DicomViewer.IO
 
         private static Scan LoadXA3DImageStorage(DicomFile dicomFile)
         {
-            var volume = new VolumeData();
+            var volume = new ImageSet();
             var dataSet = dicomFile.Dataset;
 
             var dicomPixelData = DicomPixelData.Create(dataSet);
@@ -76,7 +76,7 @@ namespace DicomViewer.IO
             return new Scan { Volume = volume, Patient = patient };
         }
 
-        private static void DeriveVolumeFields(VolumeData volume)
+        private static void DeriveVolumeFields(ImageSet volume)
         {
             var firstImage = volume.Slices.First();
             var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
@@ -188,7 +188,7 @@ namespace DicomViewer.IO
 
         private static Scan LoadEnhancedMRImage(DicomFile dicomFile)
         {
-            var volume = new VolumeData();
+            var volume = new ImageSet();
             var dataSet = dicomFile.Dataset;
 
             var dicomPixelData = DicomPixelData.Create(dataSet);
@@ -236,7 +236,7 @@ namespace DicomViewer.IO
         {
             if (files.Count == 0) { return null; }
 
-            var volume = new VolumeData();
+            var volume = new ImageSet();
 
             foreach (var originalFile in files)
             {
@@ -354,7 +354,7 @@ namespace DicomViewer.IO
             return image;
         }
 
-        private static Spacing3 GetVoxelSpacing(VolumeData volume)
+        private static Spacing3 GetVoxelSpacing(ImageSet volume)
         {
             var slices = volume.Slices;
             var firstSlice = slices.First();

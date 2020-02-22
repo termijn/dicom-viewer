@@ -27,6 +27,8 @@ namespace RenderEngine
         int GetNumberOfImages();
         void SetImageIndex(int index);
 
+		virtual event System::Action ^ Invalidated;
+
     private:
         ImageVisualPrivates* privates;
 
