@@ -48,16 +48,11 @@ namespace DicomViewer.IO
 
                 ImageData image = CreateImageData(pixelData);
                 if (image == null) { continue; }
-
-                image.Width = dicomPixelData.Width;
-                image.Height = dicomPixelData.Height;
                 volume.Slices.Add(image);
 
                 var pixelMeasures = frameDataSet.GetSequence(DicomTag.PixelMeasuresSequence);
                 var pixelMeasuresDataSet = pixelMeasures.ElementAt(0);
-                var dicomPixelSpacing = pixelMeasuresDataSet.GetDicomItem<DicomDecimalString>(DicomTag.PixelSpacing);
-                image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
-                image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
+                GetPixelSpacing(pixelMeasuresDataSet, image);                
 
                 var planeOrientations = frameDataSet.GetSequence(DicomTag.PlaneOrientationSequence);
                 var planeOrientationDataSet = planeOrientations.ElementAt(0);
@@ -69,15 +64,20 @@ namespace DicomViewer.IO
 
                 var planePositionSequence = functionalGroupPerFrameDataSet.GetSequence(DicomTag.PlanePositionSequence);
                 var planePositionDataSet = planePositionSequence.ElementAt(0);
-                var dicomPositionPatient = planePositionDataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImagePositionPatient);
-                image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
-                image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
-                image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
-
+                GetPositionPatient(planePositionDataSet, image);
+                
                 ReadWindowing(image, functionalGroupPerFrameDataSet);
                 ReadPixelTransformation(image, frameDataSet, functionalGroupPerFrameDataSet);
             }
 
+            DeriveVolumeFields(volume);
+            var patient = GetPatient(dataSet);
+
+            return new Scan { Volume = volume, Patient = patient };
+        }
+
+        private static void DeriveVolumeFields(VolumeData volume)
+        {
             var firstImage = volume.Slices.First();
             var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
             
@@ -93,10 +93,6 @@ namespace DicomViewer.IO
 
             volume.Slices.Sort(new SlicePositionComparer(zAxis));
             volume.VoxelSpacing = GetVoxelSpacing(volume);
-
-            var patient = GetPatient(dataSet);
-
-            return new Scan { Volume = volume, Patient = patient };
         }
 
         private static void GetImageOrientationPatient(ImageData image, DicomDecimalString dicomOrientationPatient)
@@ -118,6 +114,21 @@ namespace DicomViewer.IO
                 image.XAxisPatient = xAxis.Normalized();
                 image.YAxisPatient = yAxis.Normalized();
             }
+        }
+
+        private static void GetPositionPatient(DicomDataset dataSet, ImageData image)
+        {
+            var dicomPositionPatient = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImagePositionPatient);
+            image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
+            image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
+            image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+        }
+
+        private static void GetPixelSpacing(DicomDataset dataSet, ImageData image)
+        {            
+            var dicomPixelSpacing = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.PixelSpacing);
+            image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
+            image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
         }
 
         private static void ReadWindowing(ImageData image, DicomDataset functionalGroupPerFrameDataSet)
@@ -193,8 +204,6 @@ namespace DicomViewer.IO
                 ImageData image = CreateImageData(pixelData);
                 if (image == null) { continue; }
 
-                image.Width = dicomPixelData.Width;
-                image.Height = dicomPixelData.Height;
                 volume.Slices.Add(image);
 
                 var functionalGroupPerFrame = dataSet.GetSequence(DicomTag.PerFrameFunctionalGroupsSequence);
@@ -202,9 +211,7 @@ namespace DicomViewer.IO
                 var pixelMeasureSequence = functionalGroupPerFrameDataSet.GetSequence(DicomTag.PixelMeasuresSequence);
                 var pixelMeasureSequenceItem = pixelMeasureSequence.FirstOrDefault();
 
-                var dicomPixelSpacing = pixelMeasureSequenceItem.GetDicomItem<DicomDecimalString>(DicomTag.PixelSpacing);
-                image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
-                image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
+                GetPixelSpacing(pixelMeasureSequenceItem, image);                
 
                 var planeOrientations = functionalGroupPerFrameDataSet.GetSequence(DicomTag.PlaneOrientationSequence);
                 var planeOrientationDataSet = planeOrientations.ElementAt(0);
@@ -213,31 +220,13 @@ namespace DicomViewer.IO
 
                 var planePositionSequence = functionalGroupPerFrameDataSet.GetSequence(DicomTag.PlanePositionSequence);
                 var planePositionDataSet = planePositionSequence.ElementAt(0);
-                var dicomPositionPatient = planePositionDataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImagePositionPatient);
-                image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
-                image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
-                image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+                GetPositionPatient(planePositionDataSet, image);
 
                 ReadWindowing(image, functionalGroupPerFrameDataSet);
                 ReadPixelTransformation(image, frameDataSet, functionalGroupPerFrameDataSet);
             }
 
-            var firstImage = volume.Slices.First();
-            var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
-            
-            volume.TransformationToPatient = ToRotationMatrix(firstImage.XAxisPatient, firstImage.YAxisPatient);
-            volume.RescaleIntercept = firstImage.Intercept;
-            volume.RescaleSlope = firstImage.Slope;
-            volume.Dimensions = new Dimensions3
-            {
-                X = volume.Slices[0].Width,
-                Y = volume.Slices.Count,
-                Z = volume.Slices[0].Height
-            };
-
-            volume.Slices.Sort(new SlicePositionComparer(zAxis));
-            volume.VoxelSpacing = GetVoxelSpacing(volume);
-
+            DeriveVolumeFields(volume);
             var patient = GetPatient(dataSet);
 
             return new Scan { Volume = volume, Patient = patient };
@@ -272,25 +261,10 @@ namespace DicomViewer.IO
 
                         ImageData image = CreateImageData(pixelData);
                         if (image == null) { continue; }
-
-                        image.Width = dicomPixelData.Width;
-                        image.Height = dicomPixelData.Height;
                         volume.Slices.Add(image);
 
-                        var dicomPixelSpacing = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.PixelSpacing);
-                        if (dicomPixelSpacing != null)
-                        {
-                            image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
-                            image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
-                        }                        
-
-                        var dicomPositionPatient = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImagePositionPatient);
-                        if (dicomPositionPatient != null)
-                        {
-                            image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
-                            image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
-                            image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
-                        }                        
+                        GetPixelSpacing(dataSet, image);
+                        GetPositionPatient(dataSet, image);
 
                         var dicomOrientationPatient = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImageOrientationPatient);
                         GetImageOrientationPatient(image, dicomOrientationPatient);
@@ -309,21 +283,7 @@ namespace DicomViewer.IO
                 }
             }
 
-            var firstImage = volume.Slices.First();
-            var zAxis = firstImage.XAxisPatient.Cross(firstImage.YAxisPatient);
-            volume.TransformationToPatient = ToRotationMatrix(firstImage.XAxisPatient, firstImage.YAxisPatient);
-            volume.RescaleIntercept = firstImage.Intercept;
-            volume.RescaleSlope = firstImage.Slope;
-            volume.Dimensions = new Dimensions3
-            {
-                X = volume.Slices[0].Width,
-                Y = volume.Slices.Count,
-                Z = volume.Slices[0].Height
-            };
-
-            volume.Slices.Sort(new SlicePositionComparer(zAxis));
-            volume.VoxelSpacing = GetVoxelSpacing(volume);
-
+            DeriveVolumeFields(volume);
             var patient = GetPatient(files.First().Dataset);
 
             return new Scan { Volume = volume, Patient = patient };
@@ -387,6 +347,10 @@ namespace DicomViewer.IO
             {
                 image = new ImageData(grayscalePixelDataU8.Data);
             }
+
+            image.Width = pixelData.Width;
+            image.Height = pixelData.Height;
+
             return image;
         }
 
