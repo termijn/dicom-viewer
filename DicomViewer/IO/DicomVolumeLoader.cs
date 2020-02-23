@@ -372,6 +372,10 @@ namespace DicomViewer.IO
             image.Width = pixelData.Width;
             image.Height = pixelData.Height;
 
+            var minMax = pixelData.GetMinMax();
+            image.MinValue = minMax.Minimum;
+            image.MaxValue = minMax.Maximum;
+
             return image;
         }
 

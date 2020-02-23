@@ -30,5 +30,15 @@
                 <iconPacks:PackIconMaterialDesign Kind="Opacity" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </ToggleButton>
         </StackPanel>
+
+        <local:Histogram 
+            Margin="12"
+            HorizontalAlignment="Right" 
+            VerticalAlignment="Bottom" 
+            WindowLevel="{Binding WindowLevel, UpdateSourceTrigger=PropertyChanged}" 
+            WindowWidth="{Binding WindowWidth, UpdateSourceTrigger=PropertyChanged}"
+            Min="{Binding Min, UpdateSourceTrigger=PropertyChanged}"
+            Max="{Binding Max, UpdateSourceTrigger=PropertyChanged}"
+            Width="240" Height="130" />
     </Grid>
 </UserControl>

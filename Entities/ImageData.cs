@@ -40,6 +40,25 @@ namespace Entities
         public double WindowWidth { get; set; }
         public double WindowLevel { get; set; }
 
+        public double MinValue { get; set; }
+        public double MaxValue { get; set; }
+
+        public double MinRescaledValue
+        {
+            get
+            {
+                return Slope * MinValue + Intercept;
+            }
+        }
+
+        public double MaxRescaledValue
+        {
+            get
+            {
+                return Slope * MaxValue + Intercept;
+            }
+        }
+
         public int BytesPerPixel { get; }
 
         public Vector3 CenterPatient

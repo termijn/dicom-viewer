@@ -97,6 +97,7 @@ void RenderEngine::ImageVisual::SetWindowing(double level, double width)
 {
     privates->imageProperty->SetColorLevel(level);
     privates->imageProperty->SetColorWindow(width);
+	Invalidated();
 }
 
 int RenderEngine::ImageVisual::GetImageIndex()

@@ -69,12 +69,23 @@ namespace DicomViewer
             _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
             _presenter.Present(_scan);
 
+            var firstImage = _scan.Volume.Slices.First();
             _imageVisual = new ImageVisual(_scan.Volume.Slices);
             _viewModel.ImageViewer.ImageVisual = _imageVisual;
             _viewModel.ImageViewer.Visuals.Add(_imageVisual);
             _viewModel.ImageViewer.Tools.IsScrollActive = true;
-            _viewModel.ImageViewer.Camera.Zoom = _scan.Volume.Slices.First().Height * _scan.Volume.Slices.First().PixelSpacing.Y * 0.5;
+            _viewModel.ImageViewer.Camera.Zoom = firstImage.Height * firstImage.PixelSpacing.Y * 0.5;
             _viewModel.ImageViewer.Camera.ViewportPan = new Matrix();
+            _viewModel.ImageViewer.WindowLevel = firstImage.WindowLevel;
+            _viewModel.ImageViewer.WindowWidth = firstImage.WindowWidth;
+
+            var levelMin = _viewModel.ImageViewer.WindowLevel - _viewModel.ImageViewer.WindowWidth / 2;
+            var levelMax = _viewModel.ImageViewer.WindowLevel + _viewModel.ImageViewer.WindowWidth / 2;
+            _viewModel.ImageViewer.Min = Math.Min(levelMin, firstImage.MinRescaledValue);
+            _viewModel.ImageViewer.Max = Math.Max(levelMax, firstImage.MaxRescaledValue);
+            var range = _viewModel.ImageViewer.Max - _viewModel.ImageViewer.Min;
+            _viewModel.ImageViewer.Min -= range / 2;
+            _viewModel.ImageViewer.Max += range / 2;
             _viewModel.SwitchTo2DCommand.Execute(null);
         }
 

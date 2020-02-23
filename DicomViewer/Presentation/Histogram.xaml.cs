@@ -16,14 +16,16 @@ namespace DicomViewer.Presentation
         public static readonly DependencyProperty WindowWidthProperty =
             DependencyProperty.Register("WindowWidth", typeof(double), typeof(Histogram), new FrameworkPropertyMetadata(1000d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, WindowLevelChanged));
 
+        public static readonly DependencyProperty MinProperty =
+            DependencyProperty.Register("Min", typeof(double), typeof(Histogram), new FrameworkPropertyMetadata(-2000d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, WindowLevelChanged));
+        public static readonly DependencyProperty MaxProperty =
+            DependencyProperty.Register("Max", typeof(double), typeof(Histogram), new FrameworkPropertyMetadata(2000d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, WindowLevelChanged));
+
         private bool isDraggingCenterHandle;
         private bool isDraggingWidthHandle;
         private double startLevel;
         private double startWidth;
-        private Point startPoint;
-        private static readonly double MinHU = -2000;
-        private static readonly double MaxHU = 2000;
-
+        private Point startPoint;        
         private bool isMouseOverCenterHandle;
         private bool isMouseOverWidthHandle;
 
@@ -44,10 +46,22 @@ namespace DicomViewer.Presentation
             set { SetValue(WindowWidthProperty, value); }
         }
 
+        public double Min
+        {
+            get { return (double)GetValue(MinProperty); }
+            set { SetValue(MinProperty, value); }
+        }
+
+        public double Max
+        {
+            get { return (double)GetValue(MaxProperty); }
+            set { SetValue(MaxProperty, value); }
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (ActualWidth == 0 || ActualHeight == 0) { return; }
-            double rangeHU = MaxHU - MinHU;
+            double rangeHU = Max - Min;
 
             double windowMin = WindowLevel - WindowWidth / 2;
             double windowMax = WindowLevel + WindowWidth / 2;
@@ -95,12 +109,12 @@ namespace DicomViewer.Presentation
             if (isDraggingCenterHandle)
             {
                 var delta = XToHU(startPoint.X) - XToHU(e.GetPosition(this).X);
-                WindowLevel = Math.Min(Math.Max(MinHU, startLevel - delta), MaxHU);
+                WindowLevel = Math.Min(Math.Max(Min, startLevel - delta), Max);
             }
             else if (isDraggingWidthHandle)
             {
                 var delta = XToHU(startPoint.X) - XToHU(e.GetPosition(this).X);
-                WindowWidth = Math.Min(Math.Max(0.1, startWidth - delta * 2), MaxHU - MinHU);
+                WindowWidth = Math.Min(Math.Max(0.1, startWidth - delta * 2), Max - Min);
             }         
         }
 
@@ -121,16 +135,16 @@ namespace DicomViewer.Presentation
 
         private double HUToX(double HU)
         {
-            double rangeHU = MaxHU - MinHU;
-            return ((HU - MinHU) / rangeHU) * ActualWidth;
+            double rangeHU = Max - Min;
+            return ((HU - Min) / rangeHU) * ActualWidth;
         }
 
         private double XToHU(double x)
         {
-            double rangeHU = MaxHU - MinHU;
+            double rangeHU = Max - Min;
 
             double factor = x / ActualWidth;
-            double HU = rangeHU * factor - MinHU;
+            double HU = rangeHU * factor - Min;
             return HU;
         }
 
