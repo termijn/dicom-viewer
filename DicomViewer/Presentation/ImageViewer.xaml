@@ -31,6 +31,18 @@
             </ToggleButton>
         </StackPanel>
 
+        <UniformGrid Opacity="0.8" Rows="1" Columns="3" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="12">
+            <Button Margin="0,0,0,0" ToolTip="Previous image" Command="{Binding NextImageCommand}">
+                <iconPacks:PackIconMaterialDesign Kind="SkipPrevious" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+            <Button Margin="0,0,0,0" Width="48" Height="54"  ToolTip="Play / Stop playing" Command="{Binding TogglePlayCommand}">
+                <iconPacks:PackIconMaterialDesign Kind="PlayArrow" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+            <Button Margin="0,0,0,0" ToolTip="Next image" Command="{Binding PreviousImageCommand}">
+                <iconPacks:PackIconMaterialDesign Kind="SkipNext" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+        </UniformGrid>
+        
         <local:Histogram 
             Margin="12"
             HorizontalAlignment="Right" 

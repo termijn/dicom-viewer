@@ -4,5 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             ToolTip="Windowing - drag handles to change level/width"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Effect>
+        <DropShadowEffect BlurRadius="3"
+                              Color="#877b77"
+                              Opacity="100"
+                              ShadowDepth="3"
+                              Direction="0" />
+    </UserControl.Effect>
 </UserControl>

@@ -84,7 +84,7 @@ namespace DicomViewer.IO
                 var planePositionDataSet = planePositionSequence.ElementAt(0);
                 GetPositionPatient(planePositionDataSet, image);
                 
-                ReadWindowing(image, functionalGroupPerFrameDataSet);
+                ReadWindowing(image, frameDataSet);
                 ReadPixelTransformation(image, frameDataSet, functionalGroupPerFrameDataSet);
             }
 

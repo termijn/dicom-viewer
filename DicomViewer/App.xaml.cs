@@ -73,6 +73,7 @@ namespace DicomViewer
             _imageVisual = new ImageVisual(_scan.Volume.Slices);
             _viewModel.ImageViewer.ImageVisual = _imageVisual;
             _viewModel.ImageViewer.Visuals.Add(_imageVisual);
+
             _viewModel.ImageViewer.Tools.IsScrollActive = true;
             _viewModel.ImageViewer.Camera.Zoom = firstImage.Height * firstImage.PixelSpacing.Y * 0.5;
             _viewModel.ImageViewer.Camera.ViewportPan = new Matrix();

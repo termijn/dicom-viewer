@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,6 +21,9 @@ namespace DicomViewer.Presentation
             DependencyProperty.Register("Min", typeof(double), typeof(Histogram), new FrameworkPropertyMetadata(-2000d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, WindowLevelChanged));
         public static readonly DependencyProperty MaxProperty =
             DependencyProperty.Register("Max", typeof(double), typeof(Histogram), new FrameworkPropertyMetadata(2000d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, WindowLevelChanged));
+
+        public static readonly DependencyProperty BinsProperty =
+            DependencyProperty.Register("Bins", typeof(int[]), typeof(Histogram), new FrameworkPropertyMetadata(new int[0], FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, WindowLevelChanged));
 
         private bool isDraggingCenterHandle;
         private bool isDraggingWidthHandle;
@@ -58,6 +62,12 @@ namespace DicomViewer.Presentation
             set { SetValue(MaxProperty, value); }
         }
 
+        public int[] Bins
+        {
+            get { return (int[])GetValue(BinsProperty); }
+            set { SetValue(BinsProperty, value); }
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (ActualWidth == 0 || ActualHeight == 0) { return; }
@@ -73,6 +83,19 @@ namespace DicomViewer.Presentation
 
             drawingContext.DrawEllipse(isMouseOverCenterHandle || isDraggingCenterHandle ? Brushes.White : Brushes.Transparent, pen, new Point(HUToX(WindowLevel), ActualHeight / 2), 7, 7);
             drawingContext.DrawEllipse(isMouseOverWidthHandle || isDraggingWidthHandle ? Brushes.White : Brushes.Transparent, pen, new Point(HUToX(windowMax), 0), 7, 7);
+
+            if (Bins != null && Bins.Length > 0)
+            {
+                int maxValue = Bins.Max();
+                double factor = ActualHeight / maxValue;
+                double binStep = ActualWidth / Bins.Length;
+                for (int i = 0; i < Bins.Length - 1; i++)
+                {
+                    drawingContext.DrawLine(pen, 
+                        new Point(binStep * i      , ActualHeight - Bins[i] * factor), 
+                        new Point(binStep * (i + 1), ActualHeight - Bins[i + 1] * factor));
+                }
+            }            
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)

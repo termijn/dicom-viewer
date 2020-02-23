@@ -10,6 +10,7 @@ namespace DicomViewer.Presentation
         private IMouseInteractor _interactorRight;
         private double _windowLevel;
         private double _windowWidth;
+        private int[] _histogram;
 
         public VolumeViewerViewModel()
         {
@@ -21,7 +22,7 @@ namespace DicomViewer.Presentation
         public double WindowLevel
         {
             get => _windowLevel;
-            set  
+            set
             {
                 if (SetProperty(ref _windowLevel, value))
                 {
@@ -39,6 +40,11 @@ namespace DicomViewer.Presentation
                     VolumeVisual?.SetWindowing(WindowLevel, WindowWidth);
                 }
             }
+        }
+
+        public int[] Histogram
+        {
+            get => _histogram; set => SetProperty(ref _histogram, value);
         }
 
         public VolumeVisual VolumeVisual { get; set; }

@@ -19,6 +19,7 @@ namespace RenderEngine
 		virtual void AddTo(ViewportRenderer ^ viewport);
 		virtual void RemoveFrom(ViewportRenderer ^ viewport);
 
+		array<long>^ GetHistogram();
 		void SetWindowing(double windowLevel, double windowWidth);
 		double GetWindowLevel();
 		double GetWindowWidth();

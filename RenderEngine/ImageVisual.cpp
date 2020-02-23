@@ -114,4 +114,5 @@ void RenderEngine::ImageVisual::SetImageIndex(int index)
 {
     currentImageIndex = index;
     privates->mapper->SetSliceNumber(currentImageIndex);
+	Invalidated();
 }

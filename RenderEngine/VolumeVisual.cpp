@@ -6,6 +6,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkVolumeProperty.h>
 #include "vtkDicomVolumeImageReader.h"
+#include <vtkImageHistogram.h>
 
 using namespace RenderEngine;
 
@@ -24,6 +25,7 @@ struct RenderEngine::VolumeVisualPrivates
 	vtkSmartPointer<vtkColorTransferFunction> volumeColor;
 	vtkSmartPointer<vtkPiecewiseFunction> volumeScalarOpacity;
 	vtkSmartPointer<vtkVolumeProperty> volumeProperty;
+	vtkSmartPointer<vtkImageHistogram> histogram;
 };
 
 
@@ -92,10 +94,7 @@ VolumeVisual::VolumeVisual(ImageSet ^ volumeData)
 
 	// The opacity transfer function is used to control the opacity
 	// of different tissue types.
-	privates->volumeScalarOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
-	privates->volumeScalarOpacity->AddPoint(0, 0.00);
-	privates->volumeScalarOpacity->AddPoint(100, 0.0);
-	privates->volumeScalarOpacity->AddPoint(1000, 1);
+	privates->volumeScalarOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();	
 	//volumeScalarOpacity->AddPoint(1150, 0.85);
 
 	//volumeScalarOpacity->AddPoint(-3024, 0, 0.5, 0.0);
@@ -144,6 +143,12 @@ VolumeVisual::VolumeVisual(ImageSet ^ volumeData)
 		}
 	}
 	privates->volume->SetUserMatrix(userMatrix);
+
+	SetWindowing(1000, 2000);
+
+	privates->histogram =
+		vtkSmartPointer<vtkImageHistogram>::New();
+	privates->histogram->SetInputConnection(volumeReader->GetOutputPort());
 }
 
 VolumeVisual::~VolumeVisual()
@@ -164,6 +169,27 @@ void VolumeVisual::AddTo(ViewportRenderer ^ viewport)
 void RenderEngine::VolumeVisual::RemoveFrom(ViewportRenderer ^ viewport)
 {
 	viewport->GetRenderer()->RemoveVolume(privates->volume);
+}
+
+array<long>^ RenderEngine::VolumeVisual::GetHistogram()
+{
+	privates->histogram->GenerateHistogramImageOff();
+	privates->histogram->AutomaticBinningOff();
+	privates->histogram->Update();
+
+	vtkIdType nbins = privates->histogram->GetNumberOfBins();
+	double range[2];
+	range[0] = privates->histogram->GetBinOrigin();
+	range[1] = range[0] + (nbins - 1)*privates->histogram->GetBinSpacing();
+
+	vtkIdTypeArray* output = privates->histogram->GetHistogram();
+	const long nrValues = output->GetNumberOfValues();
+	auto result = gcnew array<long>(nrValues);
+	for (int i = 1; i < nrValues-1; i++)
+	{
+		result[i] = Math::Sqrt(output->GetValue(i));
+	}
+	return result;
 }
 
 void VolumeVisual::SetWindowing(double windowLevel, double windowWidth)
