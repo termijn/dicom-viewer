@@ -3,6 +3,8 @@ using Dicom.Imaging;
 using Dicom.Imaging.Codec;
 using Dicom.Imaging.Render;
 using Entities;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,29 +12,45 @@ namespace DicomViewer.IO
 {
     public static class DicomVolumeLoader
     {
+        private static ILogger logger;
+
+        static DicomVolumeLoader()
+        {
+            logger = Logging.GetLogger("DicomVolumeLoader");
+        }   
+
         public static Scan Load(DicomSeries series)
         {
-            if (series.FileNames.Count == 1)
+            try
             {
-                var filePath = series.FileNames.First();
-                var file = DicomFile.Open(filePath);
-                return Load(file);
-            }
-            else if (series.FileNames.Count > 1)
-            {
-                var files = new List<DicomFile>();
-                foreach(var fileName in series.FileNames)
+                if (series.FileNames.Count == 1)
                 {
-                    var file = DicomFile.Open(fileName);
-                    files.Add(file);
+                    var filePath = series.FileNames.First();
+                    var file = DicomFile.Open(filePath);
+                    return Load(file);
                 }
-                return Load(files);
+                else if (series.FileNames.Count > 1)
+                {
+                    var files = new List<DicomFile>();
+                    foreach (var fileName in series.FileNames)
+                    {
+                        var file = DicomFile.Open(fileName);
+                        files.Add(file);
+                    }
+                    return Load(files);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, $"Could not load dataset '{e.Message}' {e.StackTrace}");
             }
             return null;
         }
 
         private static Scan LoadXA3DImageStorage(DicomFile dicomFile)
         {
+            logger.LogInformation("Loading XA 3D Image file");
+
             var volume = new ImageSet();
             var dataSet = dicomFile.Dataset;
 
@@ -119,16 +137,22 @@ namespace DicomViewer.IO
         private static void GetPositionPatient(DicomDataset dataSet, ImageData image)
         {
             var dicomPositionPatient = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.ImagePositionPatient);
-            image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
-            image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
-            image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+            if (dicomPositionPatient != null)
+            {
+                image.PositionPatient.X = dicomPositionPatient.Get<double>(0);
+                image.PositionPatient.Y = dicomPositionPatient.Get<double>(1);
+                image.PositionPatient.Z = dicomPositionPatient.Get<double>(2);
+            }
         }
 
         private static void GetPixelSpacing(DicomDataset dataSet, ImageData image)
-        {            
+        {
             var dicomPixelSpacing = dataSet.GetDicomItem<DicomDecimalString>(DicomTag.PixelSpacing);
-            image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
-            image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
+            if (dicomPixelSpacing != null)
+            {
+                image.PixelSpacing.X = dicomPixelSpacing.Get<double>(0);
+                image.PixelSpacing.Y = dicomPixelSpacing.Get<double>(1);
+            }
         }
 
         private static void ReadWindowing(ImageData image, DicomDataset functionalGroupPerFrameDataSet)
@@ -167,22 +191,19 @@ namespace DicomViewer.IO
             var dataSet = dicomFile.Dataset;
             var sopclass = dataSet.GetValueOrDefault(DicomTag.SOPClassUID, 0, string.Empty);
 
-            if (sopclass == DicomSopClasses.XA3DImageStorageSopClass)
+            switch(sopclass)
             {
-                return LoadXA3DImageStorage(dicomFile);
-            }
-            else if (sopclass == DicomSopClasses.EnhancedMRImageStorageSopClass)
-            {
-                return LoadEnhancedMRImage(dicomFile);
-            }
-            else if (sopclass == DicomSopClasses.MRImageStorageSopClass)
-            {
-                return Load(new List<DicomFile> { dicomFile });
-            }
-            else if (sopclass == DicomSopClasses.XRayAngiographicImageStorageSopClass)
-            {
-                return Load(new List<DicomFile> { dicomFile });
-            }
+                case DicomSopClasses.XA3DImageStorageSopClass:
+                    return LoadXA3DImageStorage(dicomFile);
+                case DicomSopClasses.EnhancedMRImageStorageSopClass:
+                    return LoadEnhancedMRImage(dicomFile);
+                case DicomSopClasses.MRImageStorageSopClass:
+                case DicomSopClasses.XRayAngiographicImageStorageSopClass:
+                    return Load(new List<DicomFile> { dicomFile });
+                default:
+                    logger.LogWarning($"Unsupported sop class: {sopclass}");
+                    break;
+            };            
             return null;
         }
 
