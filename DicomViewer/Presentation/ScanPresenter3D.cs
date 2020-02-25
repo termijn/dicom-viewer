@@ -34,8 +34,15 @@ namespace DicomViewer.Presentation
             _volumeViewerViewModel.InteractorRight = new PanCameraInteractor(_volumeViewerViewModel.Camera);
             _volumeViewerViewModel.VolumeVisual = _visual;
             _volumeViewerViewModel.Tools.IsRotateActive = true;
-            _volumeViewerViewModel.WindowLevel = scan.Volume.Slices.First().WindowLevel;
-            _volumeViewerViewModel.WindowWidth = scan.Volume.Slices.First().WindowWidth;
+
+            var centerSlice = scan.Volume.Slices[scan.Volume.Slices.Count / 2];
+            _volumeViewerViewModel.WindowLevel = centerSlice.WindowLevel;
+            _volumeViewerViewModel.WindowWidth = centerSlice.WindowWidth;
+            var levelMin = centerSlice.WindowLevel - centerSlice.WindowWidth / 2;
+            var levelMax = centerSlice.WindowLevel + centerSlice.WindowWidth / 2;
+
+            _volumeViewerViewModel.WindowLevel = centerSlice.WindowLevel;
+            _volumeViewerViewModel.WindowWidth = centerSlice.WindowWidth;
         }
 
         protected override void OnDispose()
