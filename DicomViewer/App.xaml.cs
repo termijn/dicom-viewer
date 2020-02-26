@@ -24,10 +24,10 @@ namespace DicomViewer
     public partial class App : Application
     {
         private MainViewModel _viewModel;
-        private Scan _scan;
-        private ScanPresenter3D _presenter;
-        private ImageVisual _imageVisual;
+        private Scan _scan;        
         private ILogger _logger;
+        private ScanPresenter2D _presenter2d;
+        private ScanPresenter3D _presenter;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -69,25 +69,8 @@ namespace DicomViewer
             _presenter = new ScanPresenter3D(_viewModel, _viewModel.VolumeViewer);
             _presenter.Present(_scan);
 
-            var firstImage = _scan.Volume.Slices[_scan.Volume.Slices.Count / 2];
-            _imageVisual = new ImageVisual(_scan.Volume.Slices);
-            _viewModel.ImageViewer.ImageVisual = _imageVisual;
-            _viewModel.ImageViewer.Visuals.Add(_imageVisual);
-
-            _viewModel.ImageViewer.Tools.IsScrollActive = true;
-            _viewModel.ImageViewer.Camera.Zoom = firstImage.Height * firstImage.PixelSpacing.Y * 0.5;
-            _viewModel.ImageViewer.Camera.ViewportPan = new Matrix();
-
-            _viewModel.ImageViewer.WindowLevel = firstImage.WindowLevel;
-            _viewModel.ImageViewer.WindowWidth = firstImage.WindowWidth;       
-            var levelMin = firstImage.WindowLevel - firstImage.WindowWidth / 2;
-            var levelMax = firstImage.WindowLevel + firstImage.WindowWidth / 2;
-            _viewModel.ImageViewer.Min = Math.Min(levelMin, firstImage.MinRescaledValue);
-            _viewModel.ImageViewer.Max = Math.Max(levelMax, firstImage.MaxRescaledValue);
-            var range = _viewModel.ImageViewer.Max - _viewModel.ImageViewer.Min;
-            _viewModel.ImageViewer.Min -= range / 2;
-            _viewModel.ImageViewer.Max += range / 2;
-            _viewModel.SwitchTo2DCommand.Execute(null);
+            _presenter2d = new ScanPresenter2D(_viewModel);
+            _presenter2d.Present(_scan);
         }
 
         private void LoadFile()
@@ -159,10 +142,10 @@ namespace DicomViewer
 
         private void DisposeScan()
         {
-            if (_imageVisual != null)
+            if (_presenter2d != null)
             {
-                _imageVisual.Dispose();
-                _imageVisual = null;
+                _presenter2d.Dispose();
+                _presenter2d = null;
             }
 
             if (_presenter != null)

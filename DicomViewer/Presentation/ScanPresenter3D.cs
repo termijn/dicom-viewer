@@ -2,7 +2,6 @@
 using Entities;
 using RenderEngine;
 using System;
-using System.Linq;
 using Viewing;
 
 namespace DicomViewer.Presentation
@@ -41,13 +40,13 @@ namespace DicomViewer.Presentation
             var levelMin = centerSlice.WindowLevel - centerSlice.WindowWidth / 2;
             var levelMax = centerSlice.WindowLevel + centerSlice.WindowWidth / 2;
 
-            _volumeViewerViewModel.WindowLevel = centerSlice.WindowLevel;
+             _volumeViewerViewModel.WindowLevel = centerSlice.WindowLevel;
             _volumeViewerViewModel.WindowWidth = centerSlice.WindowWidth;
         }
 
         protected override void OnDispose()
         {
-            _volumeViewerViewModel.Visuals.Clear();
+            _volumeViewerViewModel.Visuals.Remove(_visual);
             _visual.Dispose();
         }
     }

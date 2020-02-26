@@ -210,6 +210,7 @@
     <Compile Include="Presentation\ImageViewer.xaml.cs">
       <DependentUpon>ImageViewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Presentation\ScanPresenter2D.cs" />
     <Compile Include="Presentation\ScanPresenter3D.cs" />
     <Compile Include="Presentation\ToolSelectorViewModel.cs" />
     <Page Include="Presentation\Histogram.xaml">
