@@ -1,4 +1,6 @@
-﻿namespace DicomViewer.Presentation
+﻿using System.Windows;
+
+namespace DicomViewer.Presentation
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

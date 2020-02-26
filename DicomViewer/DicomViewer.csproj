@@ -197,6 +197,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IO\DataSetSelector.cs" />
     <Compile Include="IO\DicomSeries.cs" />
     <Compile Include="IO\DicomSeriesExtractor.cs" />
     <Compile Include="IO\DicomSopClasses.cs" />
