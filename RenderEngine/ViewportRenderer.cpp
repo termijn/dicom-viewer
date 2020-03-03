@@ -23,8 +23,8 @@ class RenderEngine::ViewportRendererImpl
 {
 public:
     ViewportRendererImpl()
-		: renderer(vtkSmartPointer<vtkOpenGLRenderer>::New())
-		, renderWindow(vtkSmartPointer<vtkRenderWindow>::New())
+		: renderWindow(vtkSmartPointer<vtkRenderWindow>::New())
+        , renderer(vtkSmartPointer<vtkOpenGLRenderer>::New())
 		, windowToImageFilter(vtkSmartPointer<vtkWindowToImageFilter>::New())
     {
         /*vtkSmartPointer<vtkWin32OutputWindow> outputWindow = vtkSmartPointer<vtkWin32OutputWindow>::New();
@@ -48,7 +48,9 @@ public:
 
     ~ViewportRendererImpl()
     {
-
+        windowToImageFilter = nullptr;
+        renderWindow = nullptr;
+        renderer = nullptr;
     }
 
     void SetSize(int width, int height)
@@ -104,8 +106,8 @@ public:
     }
 
 private:
-    vtkSmartPointer<vtkOpenGLRenderer> renderer;
     vtkSmartPointer<vtkRenderWindow> renderWindow;
+    vtkSmartPointer<vtkOpenGLRenderer> renderer;
     vtkSmartPointer<vtkWindowToImageFilter> windowToImageFilter;
 };
 

@@ -105,8 +105,8 @@ namespace DicomViewer.IO
             volume.Dimensions = new Dimensions3
             {
                 X = volume.Slices[0].Width,
-                Y = volume.Slices.Count,
-                Z = volume.Slices[0].Height
+                Y = volume.Slices[0].Height,
+                Z = volume.Slices.Count
             };
 
             volume.Slices.Sort(new SlicePositionComparer(zAxis));
@@ -386,8 +386,8 @@ namespace DicomViewer.IO
             var spacing = new Spacing3
             {
                 X = firstSlice.PixelSpacing.X,
-                Y = (volume.Slices.Last().PositionPatient - volume.Slices.First().PositionPatient).Length() / volume.Slices.Count,
-                Z = firstSlice.PixelSpacing.Y
+                Y = firstSlice.PixelSpacing.Y,
+                Z = (volume.Slices.Last().PositionPatient - volume.Slices.First().PositionPatient).Length() / volume.Slices.Count
             };
             return spacing;
         }

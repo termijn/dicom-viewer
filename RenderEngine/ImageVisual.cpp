@@ -7,10 +7,12 @@
 #include <vtkImageProperty.h>
 #include <vtkSmartPointer.h>
 #include "vtkMemoryImageReader.h"
+#include "ImageSetReaderFactory.h"
 
 class ImageVisualPrivates
 {
 public:
+	vtkMemoryImageReader* imageReader;
     vtkSmartPointer<vtkImageSliceMapper> mapper;
     vtkSmartPointer<vtkImageSlice> image;
     vtkSmartPointer<vtkImageProperty> imageProperty;
@@ -19,42 +21,34 @@ public:
     int currentImageIndex;
 };
 
-RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageData^>^ images)
+RenderEngine::ImageVisual::ImageVisual(ImageSet^ images)
 {
     privates = new ImageVisualPrivates();
 
     this->images = images;
-    auto reader = vtkSmartPointer<vtkMemoryImageReader>::New();
 
-    numberOfImages = images->Count;
-    int width = images[0]->Width;
-    int height = images[0]->Height;
+	privates->imageReader = ImageSetReaderFactory::Acquire(images);
 
-    void** pixels = new void*[images->Count];
-    int i = 0;
-    for each(auto image in images)
-    {
-        pixels[i++] = image->Pixels.ToPointer();
-    }
+    numberOfImages = images->Slices->Count;
+    int width = images->Slices[0]->Width;
+    int height = images->Slices[0]->Height;
 
-    auto firstImage = images[0];
-    reader->SetImages(pixels, firstImage->BytesPerPixel, width, height, images->Count, firstImage->Intercept, firstImage->Slope, firstImage->PixelSpacing->X, firstImage->PixelSpacing->Y);
-    reader->Update();
+    auto firstImage = images->Slices[0];
 
     privates->image = vtkSmartPointer<vtkImageSlice>::New();
     privates->mapper = vtkSmartPointer<vtkImageSliceMapper>::New();
 
-    privates->mapper->SetInputData(reader->GetOutput());
+    privates->mapper->SetInputData(privates->imageReader->GetOutput());
     privates->image->SetMapper(privates->mapper);
 
     privates->imageProperty = vtkSmartPointer<vtkImageProperty>::New();
     privates->imageProperty->SetInterpolationTypeToCubic();
     privates->image->SetProperty(privates->imageProperty);
 
-    int index = (images->Count - 1) / 2;
+    int index = (images->Slices->Count - 1) / 2;
     SetImageIndex(index);
 
-    auto image = images[index];
+    auto image = images->Slices[index];
     if (image->DefaultWindowingAvailable)
     {
         privates->imageProperty->SetColorWindow(image->WindowWidth);
@@ -65,6 +59,7 @@ RenderEngine::ImageVisual::ImageVisual(System::Collections::Generic::List<ImageD
 RenderEngine::ImageVisual::!ImageVisual()
 {
     delete privates;
+	ImageSetReaderFactory::Release(images);
 }
 
 RenderEngine::ImageVisual::~ImageVisual()

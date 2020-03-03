@@ -9,7 +9,7 @@ public:
     vtkTypeMacro(vtkMemoryImageReader, vtkImageAlgorithm);
 
     vtkMemoryImageReader();
-    ~vtkMemoryImageReader();
+    virtual ~vtkMemoryImageReader();
 
     void SetImages(
         void ** images,
@@ -20,7 +20,9 @@ public:
         double rescaleIntercept,
         double rescaleSlope,
         double pixelSpacingX,
-        double pixelSpacingY);
+        double pixelSpacingY,
+        double pixelSpacingZ,
+        bool isSigned);
 
     int RequestUpdateExtent(vtkInformation *,
         vtkInformationVector **,
@@ -36,8 +38,8 @@ private:
     vtkMemoryImageReader(const vtkMemoryImageReader&) = delete;
     void operator=(const vtkMemoryImageReader&) = delete;
 
-	template <typename T>
-	void Copy(T** slices, T* destination);
+    template<typename T>
+    void Copy(T ** slices, short * destination);
 
     void** images;
 	int bytesPerPixel;
@@ -48,4 +50,6 @@ private:
     double rescaleSlope;
     double pixelSpacingX;
     double pixelSpacingY;
+    double pixelSpacingZ;
+    bool isSigned;
 };

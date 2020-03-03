@@ -12,7 +12,7 @@ namespace RenderEngine
     public ref class ImageVisual : public IVisual
     {
     public:
-        ImageVisual(System::Collections::Generic::List<ImageData^>^ images);
+        ImageVisual(ImageSet^ images);
         !ImageVisual();
         ~ImageVisual();
 
@@ -32,7 +32,7 @@ namespace RenderEngine
     private:
         ImageVisualPrivates* privates;
 
-        System::Collections::Generic::List<ImageData^>^ images;
+        ImageSet^ images;
         int numberOfImages;
         int currentImageIndex;
     };

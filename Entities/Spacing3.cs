@@ -2,9 +2,9 @@
 {
     public class Spacing3
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
+        public double X { get; set; } = 1;
+        public double Y { get; set; } = 1;
+        public double Z { get; set; } = 1;
 
         public Vector3 AsVector()
         {

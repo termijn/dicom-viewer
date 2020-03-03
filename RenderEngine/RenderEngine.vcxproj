@@ -91,21 +91,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Conversions.h" />
+    <ClInclude Include="ImageSetReaderFactory.h" />
     <ClInclude Include="ImageVisual.h" />
     <ClInclude Include="IVisual.h" />
     <ClInclude Include="ViewportRenderer.h" />
     <ClInclude Include="VolumeVisual.h" />
-    <ClInclude Include="vtkDicomVolumeImageReader.h" />
     <ClInclude Include="vtkMemoryImageReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="Conversions.cpp" />
+    <ClCompile Include="ImageSetReaderFactory.cpp" />
     <ClCompile Include="ImageVisual.cpp" />
     <ClCompile Include="IVisual.cpp" />
     <ClCompile Include="ViewportRenderer.cpp" />
     <ClCompile Include="VolumeVisual.cpp" />
-    <ClCompile Include="vtkDicomVolumeImageReader.cpp" />
     <ClCompile Include="vtkMemoryImageReader.cpp" />
   </ItemGroup>
   <ItemGroup>

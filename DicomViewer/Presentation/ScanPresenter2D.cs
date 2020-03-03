@@ -19,13 +19,13 @@ namespace DicomViewer.Presentation
         {
             var imageViewer = viewModel.ImageViewer;
             var firstImage = scan.Volume.Slices[scan.Volume.Slices.Count / 2];
-            _imageVisual = new ImageVisual(scan.Volume.Slices);
+            _imageVisual = new ImageVisual(scan.Volume);
             imageViewer.ImageVisual = _imageVisual;
             imageViewer.Visuals.Add(_imageVisual);
 
             imageViewer.Tools.IsScrollActive = true;
             imageViewer.Camera.Zoom = firstImage.Height * firstImage.PixelSpacing.Y * 0.5;
-            imageViewer.Camera.ViewportPan = new Matrix();
+            imageViewer.Camera.ViewportPan = Matrix.Translation(new Vector3(firstImage.Width * firstImage.PixelSpacing.X / 2, firstImage.Height * firstImage.PixelSpacing.Y / 2, 0));
 
             imageViewer.WindowLevel = firstImage.WindowLevel;
             imageViewer.WindowWidth = firstImage.WindowWidth;

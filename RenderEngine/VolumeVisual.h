@@ -26,6 +26,7 @@ namespace RenderEngine
 		virtual event System::Action ^ Invalidated;
 	private:
 		VolumeVisualPrivates* privates;
+		ImageSet^ images;
 	};
 
 }

@@ -21,11 +21,10 @@ namespace Viewing
         public static readonly DependencyProperty InteractorRightProperty =
             DependencyProperty.Register("InteractorRight", typeof(IMouseInteractor), typeof(Viewport), new PropertyMetadata(null));
 
-        public ViewportRenderer ViewportRenderer { get; }
+        public ViewportRenderer ViewportRenderer { get; private set; }
 
         private WriteableBitmap _bitmap;
         private CollectionObserver<IVisual> _visualsObserver;
-        private PropertySubscription _cameraSubscription;
         private Camera _camera;
 
         public Viewport()
@@ -35,7 +34,28 @@ namespace Viewing
             InteractorLeft = new RotateCameraInteractor(Camera);
             InteractorRight = new ZoomInteractor(Camera);
 
-            Dispatcher.ShutdownStarted += OnShutdownStarted;
+            Unloaded += OnUnload;
+            Loaded += OnLoad;
+
+            Dispatcher.ShutdownStarted += ShutdownStarted;
+        }
+
+        private void ShutdownStarted(object sender, EventArgs e)
+        {
+            OnUnload(sender, new RoutedEventArgs());
+        }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void OnUnload(object sender, RoutedEventArgs e)
+        {
+            _visualsObserver?.Dispose();
+            ViewportRenderer?.Dispose();
+            ViewportRenderer = null;
+
+            Camera.PropertyChanged -= OnCameraTransformationChanged;
         }
 
         public VisualsCollection Visuals
@@ -64,10 +84,7 @@ namespace Viewing
 
         private void OnVisualsChanged(VisualsCollection visuals)
         {
-            if (_visualsObserver != null)
-            {
-                _visualsObserver.Dispose();
-            }
+            _visualsObserver?.Dispose();
             _visualsObserver = new CollectionObserver<IVisual>(visuals, OnVisualAdded, OnVisualRemoved);
         }
 
@@ -115,12 +132,13 @@ namespace Viewing
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
+            if (!IsLoaded) { return; }
             Camera.Zoom = Math.Max(10, Camera.Zoom + e.Delta / -10);
         }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            if (ActualWidth == 0 || ActualHeight == 0) { return; }
+            if (ActualWidth == 0 || ActualHeight == 0 || ViewportRenderer == null) { return; }
 
             int width = (int)ActualWidth;
             int height = (int)ActualHeight;
@@ -165,12 +183,14 @@ namespace Viewing
         private void OnCameraChanged(Camera camera)
         {
             _camera = camera;
-            _cameraSubscription = new PropertySubscription(camera, OnCameraTransformationChanged);
+
+            camera.PropertyChanged += OnCameraTransformationChanged;           
             OnCameraTransformationChanged(this, new PropertyChangedEventArgs(string.Empty));
         }
 
         private void OnCameraTransformationChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (ViewportRenderer == null) { return; }
             ViewportRenderer.SetZoom(_camera.Zoom);
             ViewportRenderer.SetCameraTransformation(_camera.TransformationToWorld * _camera.ViewportPan);
             InvalidateVisual();
@@ -184,11 +204,6 @@ namespace Viewing
         private static void OnCameraChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((Viewport)d).OnCameraChanged((Camera)e.NewValue);
-        }
-
-        private void OnShutdownStarted(object sender, EventArgs e)
-        {
-            ViewportRenderer.Dispose();
         }
     }
 }
