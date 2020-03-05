@@ -5,23 +5,21 @@ namespace Viewing
 {
     public class RotateCameraInteractor : IMouseInteractor
     {
-        private readonly Camera _camera;
         private bool _isMouseDown;
         private Matrix _beginMatrix;
         private Point _beginPosition;
         private Vector3 _centerPosition;
 
-        public RotateCameraInteractor(Camera camera)
+        public RotateCameraInteractor()
         {
-            this._camera = camera;
         }
 
         public void MouseDown(Point position, Viewport viewport)
         {
             _isMouseDown = true;
-            _beginMatrix = _camera.TransformationToWorld;
+            _beginMatrix = viewport.Camera.TransformationToWorld;
             _beginPosition = position;
-            _centerPosition = _camera.TransformationToWorld.Translation();
+            _centerPosition = viewport.Camera.TransformationToWorld.Translation();
         }
 
         public bool MouseMove(Point position, Viewport viewport)
@@ -34,14 +32,14 @@ namespace Viewing
             var yAxis = _beginMatrix * new Vector3(0, 1, 0) - _beginMatrix * new Vector3(0, 0, 0);
             var xAxis = _beginMatrix * new Vector3(1, 0, 0) - _beginMatrix * new Vector3(0, 0, 0);
 
-            _camera.TransformationToWorld = 
+            viewport.Camera.TransformationToWorld = 
                 Matrix.Translation(_centerPosition) * 
                 Matrix.RotationAngleAxis(angleY, xAxis.Normalized()) * 
                 Matrix.RotationAngleAxis(angleX, yAxis.Normalized()) * 
                 Matrix.Translation(-_centerPosition) * 
                 _beginMatrix;
 
-            _beginMatrix = _camera.TransformationToWorld;
+            _beginMatrix = viewport.Camera.TransformationToWorld;
             _beginPosition = position;
 
             return true;

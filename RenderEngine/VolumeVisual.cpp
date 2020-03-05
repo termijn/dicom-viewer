@@ -18,7 +18,6 @@ struct RenderEngine::VolumeVisualPrivates
 
 
 	vtkMemoryImageReader* reader;
-    vtkSmartPointer<vtkImageData> input;
     vtkSmartPointer<vtkVolume> volume;
     vtkSmartPointer<vtkOpenGLGPUVolumeRayCastMapper> mapper;
     vtkSmartPointer<vtkColorTransferFunction> volumeColor;
@@ -31,16 +30,13 @@ struct RenderEngine::VolumeVisualPrivates
 VolumeVisual::VolumeVisual(ImageSet ^ volumeData)
     : privates(new VolumeVisualPrivates())
 {
-    auto ptrs = volumeData->GetSlicePointers();
-
 	images = volumeData;
-
-    auto firstImage = volumeData->Slices[0];
 
 	privates->reader = ImageSetReaderFactory::Acquire(volumeData);
     
     privates->volume = vtkSmartPointer<vtkVolume>::New();
     privates->mapper = vtkSmartPointer<vtkOpenGLGPUVolumeRayCastMapper>::New();
+	privates->mapper->AutoAdjustSampleDistancesOff();
 
     privates->mapper->SetInputConnection(privates->reader->GetOutputPort());
     privates->mapper->AutoAdjustSampleDistancesOff();

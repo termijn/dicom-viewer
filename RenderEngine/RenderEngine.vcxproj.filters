@@ -39,6 +39,9 @@
     <ClCompile Include="ImageSetReaderFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SlabVisual.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ViewportRenderer.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageSetReaderFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlabVisual.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

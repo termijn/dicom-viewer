@@ -211,8 +211,13 @@
     <Compile Include="Presentation\ImageViewer.xaml.cs">
       <DependentUpon>ImageViewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Presentation\MPRViewer.xaml.cs">
+      <DependentUpon>MPRViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\MPRViewerViewModel.cs" />
     <Compile Include="Presentation\ScanPresenter2D.cs" />
     <Compile Include="Presentation\ScanPresenter3D.cs" />
+    <Compile Include="Presentation\ScanPresenterMPR.cs" />
     <Compile Include="Presentation\ToolSelectorViewModel.cs" />
     <Page Include="Presentation\Histogram.xaml">
       <SubType>Designer</SubType>
@@ -237,6 +242,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Presentation\MPRViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Presentation\VolumeViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

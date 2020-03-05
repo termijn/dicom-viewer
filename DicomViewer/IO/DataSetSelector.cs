@@ -17,6 +17,7 @@ namespace DicomViewer.IO
         private ILogger _logger;
         private ScanPresenter2D _presenter2d;
         private ScanPresenter3D _presenter;
+        private ScanPresenterMPR _presenterMPR;
 
         public DataSetSelector(MainViewModel viewModel)
         {
@@ -36,6 +37,9 @@ namespace DicomViewer.IO
 
             _presenter2d = new ScanPresenter2D(_viewModel);
             _presenter2d.Present(_scan);
+
+            _presenterMPR = new ScanPresenterMPR(_viewModel);
+            _presenterMPR.Present(_scan);
         }
 
         public void Open(string path)
@@ -85,6 +89,12 @@ namespace DicomViewer.IO
             {
                 _presenter.Dispose();
                 _presenter = null;
+            }
+
+            if (_presenterMPR != null)
+            {
+                _presenterMPR.Dispose();
+                _presenterMPR = null;
             }
             if (_scan != null)
             {

@@ -31,7 +31,7 @@ namespace Viewing
         {
             ViewportRenderer = new ViewportRenderer();
             
-            InteractorLeft = new RotateCameraInteractor(Camera);
+            InteractorLeft = new RotateCameraInteractor();
             InteractorRight = new ZoomInteractor(Camera);
 
             Unloaded += OnUnload;

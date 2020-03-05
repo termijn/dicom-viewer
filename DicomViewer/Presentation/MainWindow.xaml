@@ -24,6 +24,9 @@
                 <DataTemplate DataType="{x:Type local:VolumeViewerViewModel}">
                     <local:VolumeViewer />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type local:MPRViewerViewModel}">
+                    <local:MPRViewer />
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
 
@@ -47,11 +50,14 @@
             </TextBlock>
         </Grid>
 
-        <UniformGrid Opacity="0.8" Rows="2" Columns="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="48" Height="96" Margin="12">
+        <UniformGrid Opacity="0.8" Rows="3" Columns="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="48" Height="96" Margin="12">
             <Button Margin="0,0,0,0" ToolTip="Views this series in 2D" Command="{Binding SwitchTo2DCommand}">
                 <iconPacks:PackIconMaterialDesign Kind="Image" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Button>
             <Button Margin="0,0,0,0" ToolTip="Views this series in 3D" Command="{Binding SwitchTo3DCommand}">
+                <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+            <Button Margin="0,0,0,0" ToolTip="Views this series as MPR" Command="{Binding SwitchToMPRCommand}">
                 <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Button>
         </UniformGrid>

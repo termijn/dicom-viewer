@@ -71,7 +71,7 @@ namespace DicomViewer.IO
                                 var relativePath = string.Join(@"\", values);
 
                                 series.SopClassUid = imageRecord.GetSingleValueOrDefault(DicomTag.ReferencedSOPClassUIDInFile, "");
-                                series.NumberOfImages += imageRecord.GetSingleValueOrDefault(DicomTag.NumberOfFrames, 0);
+                                series.NumberOfImages += Math.Max(1, imageRecord.GetSingleValueOrDefault(DicomTag.NumberOfFrames, 1));
                                 var absolutePath = Path.GetDirectoryName(path) + @"\\" + relativePath;
                                 series.FileNames.Add(absolutePath);
                             }

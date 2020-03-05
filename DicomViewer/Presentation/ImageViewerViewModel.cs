@@ -116,7 +116,7 @@ namespace DicomViewer.Presentation
 
         public void ActivateRotate()
         {
-            InteractorLeft = new RotateCameraInteractor(Camera);
+            InteractorLeft = new RotateCameraInteractor();
         }
 
         public void ActivateScroll()
