@@ -31,7 +31,7 @@ namespace DicomViewer.Presentation
             _volumeViewerViewModel.Camera.ViewportPan = new Matrix();
             _volumeViewerViewModel.Camera.TransformationToWorld = Matrix.Translation(scan.Volume.CenterInPatientSpace) * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
             _volumeViewerViewModel.Tools.IsRotateActive = true;
-            _volumeViewerViewModel.InteractorRight = new PanCameraInteractor(_volumeViewerViewModel.Camera);
+            _volumeViewerViewModel.InteractorRight = new PanCameraInteractor();
             _volumeViewerViewModel.VolumeVisual = _visual;
             _volumeViewerViewModel.Tools.IsRotateActive = true;
 
@@ -41,7 +41,7 @@ namespace DicomViewer.Presentation
             var levelMin = centerSlice.WindowLevel - centerSlice.WindowWidth / 2;
             var levelMax = centerSlice.WindowLevel + centerSlice.WindowWidth / 2;
 
-             _volumeViewerViewModel.WindowLevel = centerSlice.WindowLevel;
+            _volumeViewerViewModel.WindowLevel = centerSlice.WindowLevel;
             _volumeViewerViewModel.WindowWidth = centerSlice.WindowWidth;
         }
 

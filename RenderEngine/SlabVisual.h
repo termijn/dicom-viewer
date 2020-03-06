@@ -14,7 +14,10 @@ namespace RenderEngine
 		!SlabVisual();
 		~SlabVisual();
 
-		// Inherited via IVisual
+		double GetWindowLevel();
+		double GetWindowWidth();
+		void SetWindowing(double level, double width);
+
 		virtual void AddTo(ViewportRenderer ^ viewport);
 		virtual void RemoveFrom(ViewportRenderer ^ viewport);
 		virtual event System::Action ^ Invalidated;

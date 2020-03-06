@@ -218,6 +218,7 @@
     <Compile Include="Presentation\ScanPresenter2D.cs" />
     <Compile Include="Presentation\ScanPresenter3D.cs" />
     <Compile Include="Presentation\ScanPresenterMPR.cs" />
+    <Compile Include="Presentation\StartViewModel.cs" />
     <Compile Include="Presentation\ToolSelectorViewModel.cs" />
     <Page Include="Presentation\Histogram.xaml">
       <SubType>Designer</SubType>

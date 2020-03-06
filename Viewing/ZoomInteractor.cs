@@ -5,20 +5,14 @@ namespace Viewing
 {
     public class ZoomInteractor : IMouseInteractor
     {
-        private readonly Camera camera;
         Point _startPosition;
         double _startFactor = 100;
         bool isDragging;
 
-        public ZoomInteractor(Camera camera)
-        {
-            this.camera = camera;
-        }
-
         public void MouseDown(Point position, Viewport viewport)
         {
             _startPosition = position;
-            _startFactor = camera.Zoom;
+            _startFactor = viewport.Camera.Zoom;
             isDragging = true;
         }
 
@@ -26,7 +20,7 @@ namespace Viewing
         {
             if (!isDragging) { return false; }
             double deltaY = (position - _startPosition).Y;
-            camera.Zoom = _startFactor * Math.Pow(2, 0.01 * (deltaY));
+            viewport.Camera.Zoom = _startFactor * Math.Pow(2, 0.01 * (deltaY));
             return true;
         }
 

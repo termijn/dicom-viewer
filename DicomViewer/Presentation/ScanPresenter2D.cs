@@ -20,6 +20,7 @@ namespace DicomViewer.Presentation
             var imageViewer = viewModel.ImageViewer;
             var firstImage = scan.Volume.Slices[scan.Volume.Slices.Count / 2];
             _imageVisual = new ImageVisual(scan.Volume);
+            _imageVisual.SetImageIndex(0);
             imageViewer.ImageVisual = _imageVisual;
             imageViewer.Visuals.Add(_imageVisual);
 

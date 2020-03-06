@@ -23,7 +23,7 @@ namespace DicomViewer.Presentation
         {
             Camera = new Camera();
             Tools = new ToolSelectorViewModel(this);
-            InteractorRight = new PanCameraInteractor(Camera);
+            InteractorRight = new PanCameraInteractor();
             TogglePlayCommand = new BindableCommand(TogglePlay);
             NextImageCommand = new BindableCommand(NextImage);
             PreviousImageCommand = new BindableCommand(PreviousImage);
@@ -111,7 +111,7 @@ namespace DicomViewer.Presentation
 
         public void ActivatePan()
         {
-            InteractorLeft = new PanCameraInteractor(Camera);
+            InteractorLeft = new PanCameraInteractor();
         }
 
         public void ActivateRotate()
@@ -131,7 +131,7 @@ namespace DicomViewer.Presentation
 
         public void ActivateZoom()
         {
-            InteractorLeft = new ZoomInteractor(Camera);
+            InteractorLeft = new ZoomInteractor();
         }
     }
 }

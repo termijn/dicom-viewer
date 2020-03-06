@@ -32,7 +32,7 @@ namespace Viewing
             ViewportRenderer = new ViewportRenderer();
             
             InteractorLeft = new RotateCameraInteractor();
-            InteractorRight = new ZoomInteractor(Camera);
+            InteractorRight = new ZoomInteractor();
 
             Unloaded += OnUnload;
             Loaded += OnLoad;

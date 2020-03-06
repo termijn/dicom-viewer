@@ -39,21 +39,6 @@ RenderEngine::SlabVisual::SlabVisual(Entities::ImageSet ^ images)
 
 	privates->imageSlice->SetProperty(privates->imageProperty);
 
-	double center[3];
-	privates->imageReader->GetOutput()->GetCenter(center);
-	double spacing[3];
-	privates->imageReader->GetOutput()->GetSpacing(spacing);
-
-	vtkSmartPointer<vtkPlane> plane = vtkSmartPointer<vtkPlane>::New();
-	//plane->SetOrigin(center);
-
-	double normal[3];
-	normal[0] = 0;
-	normal[1] = 1;
-	normal[2] = 0;
-	//plane->SetNormal(normal);
-
-	
 	//privates->mapper->SetSlabThickness(2);
 	privates->mapper->SetSlabTypeToMax();
 	privates->mapper->SliceFacesCameraOn();
@@ -87,6 +72,22 @@ void RenderEngine::SlabVisual::RemoveFrom(ViewportRenderer ^ viewport)
 	viewport->GetRenderer()->RemoveViewProp(privates->imageSlice);
 }
 
+double RenderEngine::SlabVisual::GetWindowLevel()
+{
+	return privates->imageProperty->GetColorLevel();
+}
+
+double RenderEngine::SlabVisual::GetWindowWidth()
+{
+	return privates->imageProperty->GetColorWindow();
+}
+
+void RenderEngine::SlabVisual::SetWindowing(double level, double width)
+{
+	privates->imageProperty->SetColorLevel(level);
+	privates->imageProperty->SetColorWindow(width);
+	Invalidated();
+}
 
 RenderEngine::SlabVisual::!SlabVisual()
 {

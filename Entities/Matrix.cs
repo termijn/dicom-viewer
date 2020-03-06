@@ -27,6 +27,11 @@ namespace Entities
             set { Elements[y * N + x] = value; }
         }
 
+        public static Matrix Translation(double x, double y, double z)
+        {
+            return Translation(new Vector3(x, y, z));
+        }
+
         public static Matrix Translation(Vector3 translationVector)
         {
             var result = new Matrix();

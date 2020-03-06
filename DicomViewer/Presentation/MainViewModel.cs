@@ -26,7 +26,7 @@ namespace DicomViewer.Presentation
             VolumeViewer = new VolumeViewerViewModel();
             ImageViewer = new ImageViewerViewModel();
             MPRViewer = new MPRViewerViewModel();
-            CurrentViewer = VolumeViewer;
+            CurrentViewer = new StartViewModel();
         }
 
         public VolumeViewerViewModel VolumeViewer { get; }

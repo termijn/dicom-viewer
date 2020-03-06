@@ -2,10 +2,6 @@
 using Entities;
 using RenderEngine;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Viewing;
 
 namespace DicomViewer.Presentation
@@ -46,7 +42,16 @@ namespace DicomViewer.Presentation
             viewer.CameraCoronal.Zoom = scan.Volume.VoxelSpacing.Y * scan.Volume.Dimensions.Y * 0.5 + margin;
             viewer.CameraCoronal.ViewportPan = new Matrix();
 
-            viewer.InteractorLeft = new RotateCameraInteractor();
+            viewer.InteractorLeft = new CameraForwardInteractor();
+
+            var centerSlice = scan.Volume.Slices[scan.Volume.Slices.Count / 2];
+            viewer.WindowLevel = centerSlice.WindowLevel;
+            viewer.WindowWidth = centerSlice.WindowWidth;
+            var levelMin = centerSlice.WindowLevel - centerSlice.WindowWidth / 2;
+            var levelMax = centerSlice.WindowLevel + centerSlice.WindowWidth / 2;
+
+            viewer.WindowLevel = centerSlice.WindowLevel;
+            viewer.WindowWidth = centerSlice.WindowWidth;
         }
 
         protected override void OnDispose()
