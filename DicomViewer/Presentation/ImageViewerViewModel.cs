@@ -21,7 +21,8 @@ namespace DicomViewer.Presentation
 
         public ImageViewerViewModel()
         {
-            Camera = new Camera();
+            var root = new Space();
+            Camera = new Camera(root);
             Tools = new ToolSelectorViewModel(this);
             InteractorRight = new PanCameraInteractor();
             TogglePlayCommand = new BindableCommand(TogglePlay);
@@ -116,7 +117,7 @@ namespace DicomViewer.Presentation
 
         public void ActivateRotate()
         {
-            InteractorLeft = new RotateCameraInteractor();
+            InteractorLeft = new RotateInteractor(Camera.Space);
         }
 
         public void ActivateScroll()

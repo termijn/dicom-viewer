@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Entities
 {
@@ -279,6 +281,20 @@ namespace Entities
             var result = new Matrix();
             Array.Copy(Elements, result.Elements, Elements.Length);
             return result;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Matrix other)
+            {
+                return other.Elements.SequenceEqual(Elements);
+            }
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return 1573927372 + EqualityComparer<double[]>.Default.GetHashCode(Elements);
         }
     }
 }

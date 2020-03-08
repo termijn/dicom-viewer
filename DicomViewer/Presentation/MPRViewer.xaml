@@ -11,10 +11,12 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="3" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
+            <RowDefinition Height="3" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <viewing:Viewport
@@ -25,9 +27,12 @@
             InteractorLeft="{Binding InteractorLeft}"
             InteractorRight="{Binding InteractorRight}"
             />
+
+        <GridSplitter Grid.Column="1" Grid.RowSpan="3" ShowsPreview="True" />
+        <GridSplitter Grid.Column="0" Grid.Row="1" ShowsPreview="True"  />
         
         <viewing:Viewport
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Visuals="{Binding VisualsSagital}"
             Camera="{Binding CameraSagital}"
@@ -37,15 +42,18 @@
 
         <viewing:Viewport
             Grid.Row="0"
-            Grid.Column="1"
-            Grid.RowSpan="2"
+            Grid.Column="2"
+            Grid.RowSpan="3"
             Visuals="{Binding VisualsCoronal}"
             Camera="{Binding CameraCoronal}"
             InteractorLeft="{Binding InteractorLeft}"
             InteractorRight="{Binding InteractorRight}"
             />
 
-        <StackPanel Opacity="0.8" Margin="12,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.RowSpan="2" Grid.ColumnSpan="2">
+        <StackPanel Opacity="0.8" Margin="12,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.RowSpan="3" Grid.ColumnSpan="3">
+            <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the 3D rotation tool" IsChecked="{Binding Tools.IsRotateActive}">
+                <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </ToggleButton>            
             <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the image scroll tool" IsChecked="{Binding Tools.IsScrollActive}">
                 <iconPacks:PackIconMaterialDesign Kind="Pages" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </ToggleButton>
@@ -59,8 +67,8 @@
 
         <local:Histogram 
             Margin="12"
-            Grid.RowSpan="2"
-            Grid.ColumnSpan="2"
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="3"
             HorizontalAlignment="Right" 
             VerticalAlignment="Bottom" 
             WindowLevel="{Binding WindowLevel, UpdateSourceTrigger=PropertyChanged}" 

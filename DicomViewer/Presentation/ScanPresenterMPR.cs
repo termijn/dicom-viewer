@@ -22,6 +22,11 @@ namespace DicomViewer.Presentation
 
             var viewer = viewModel.MPRViewer;
 
+            var axesVisual = new SlabAxesVisual(viewer.VoiSpace);
+            viewer.VisualsAxial.Add(axesVisual);
+            viewer.VisualsCoronal.Add(axesVisual);
+            viewer.VisualsSagital.Add(axesVisual);
+
             viewer.SlabAxial = new SlabVisual(scan.Volume);
             viewer.SlabSagital = new SlabVisual(scan.Volume);
             viewer.SlabCoronal = new SlabVisual(scan.Volume);
@@ -30,19 +35,25 @@ namespace DicomViewer.Presentation
             viewer.VisualsSagital.Add(viewer.SlabSagital);
             viewer.VisualsCoronal.Add(viewer.SlabCoronal);
 
-            viewer.CameraAxial.TransformationToWorld = Matrix.Translation(scan.Volume.CenterInPatientSpace);
-            viewer.CameraAxial.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + margin;
+            viewer.VoiSpace.TransformationToParent = Matrix.Translation(scan.Volume.CenterInPatientSpace);
+
+            viewer.CameraAxial.Zoom = scan.Volume.VoxelSpacing.Y * scan.Volume.Dimensions.Y * 0.5 + margin;
             viewer.CameraAxial.ViewportPan = new Matrix();
 
-            viewer.CameraSagital.TransformationToWorld = Matrix.Translation(scan.Volume.CenterInPatientSpace) * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(0, 0, 1))  * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
-            viewer.CameraSagital.Zoom = scan.Volume.VoxelSpacing.Y * scan.Volume.Dimensions.Y * 0.5 + margin;
+            viewer.CameraSagital.Space.TransformationToParent = Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(0, 0, 1))  * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
+            viewer.CameraSagital.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + margin;
             viewer.CameraSagital.ViewportPan = new Matrix();
 
-            viewer.CameraCoronal.TransformationToWorld = Matrix.Translation(scan.Volume.CenterInPatientSpace) * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
-            viewer.CameraCoronal.Zoom = scan.Volume.VoxelSpacing.Y * scan.Volume.Dimensions.Y * 0.5 + margin;
+            viewer.CameraCoronal.Space.TransformationToParent = Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
+            viewer.CameraCoronal.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + margin;
             viewer.CameraCoronal.ViewportPan = new Matrix();
 
-            viewer.InteractorLeft = new CameraForwardInteractor();
+            var root = viewer.CameraAxial.Space.GetRoot();
+            viewer.CameraAxial.CenterPan = new Coordinate(root, scan.Volume.CenterInPatientSpace);
+            viewer.CameraSagital.CenterPan = new Coordinate(root, scan.Volume.CenterInPatientSpace);
+            viewer.CameraCoronal.CenterPan = new Coordinate(root, scan.Volume.CenterInPatientSpace);
+
+            viewer.ActivateScroll();
 
             var centerSlice = scan.Volume.Slices[scan.Volume.Slices.Count / 2];
             viewer.WindowLevel = centerSlice.WindowLevel;

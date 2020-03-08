@@ -94,6 +94,7 @@
     <ClInclude Include="ImageSetReaderFactory.h" />
     <ClInclude Include="ImageVisual.h" />
     <ClInclude Include="IVisual.h" />
+    <ClInclude Include="SlabAxesVisual.h" />
     <ClInclude Include="SlabVisual.h" />
     <ClInclude Include="ViewportRenderer.h" />
     <ClInclude Include="VolumeVisual.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="ImageSetReaderFactory.cpp" />
     <ClCompile Include="ImageVisual.cpp" />
     <ClCompile Include="IVisual.cpp" />
+    <ClCompile Include="SlabAxesVisual.cpp" />
     <ClCompile Include="SlabVisual.cpp" />
     <ClCompile Include="ViewportRenderer.cpp" />
     <ClCompile Include="VolumeVisual.cpp" />

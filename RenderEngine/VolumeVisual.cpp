@@ -120,6 +120,10 @@ RenderEngine::VolumeVisual::!VolumeVisual()
 	ImageSetReaderFactory::Release(images);
 }
 
+void RenderEngine::VolumeVisual::PreRender(ViewportRenderer ^ viewport)
+{
+}
+
 void VolumeVisual::AddTo(ViewportRenderer ^ viewport)
 {
     viewport->GetRenderer()->AddVolume(privates->volume);

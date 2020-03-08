@@ -122,5 +122,27 @@ namespace Entities
         {
             return $"({X}, {Y}, {Z})";
         }
+
+        public override bool Equals(object obj)
+        {
+            var otherVector = obj as Vector3;
+            if (otherVector != null)
+            {
+                return
+                    otherVector.X == X &&
+                    otherVector.Y == Y &&
+                    otherVector.Z == Z;
+            }
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -307843816;
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            hashCode = hashCode * -1521134295 + Z.GetHashCode();
+            return hashCode;
+        }
     }
 }

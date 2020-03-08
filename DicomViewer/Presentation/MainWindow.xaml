@@ -63,7 +63,7 @@
                 <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Button>
             <Button Margin="0,0,0,0" ToolTip="Views this series as a multi-planar-reconstruction (MPR)" Command="{Binding SwitchToMPRCommand}">
-                <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Label FontSize="10">MPR</Label>
             </Button>
         </UniformGrid>
 

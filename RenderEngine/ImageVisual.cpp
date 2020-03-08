@@ -67,6 +67,10 @@ RenderEngine::ImageVisual::~ImageVisual()
     this->!ImageVisual();
 }
 
+void RenderEngine::ImageVisual::PreRender(ViewportRenderer^ viewport)
+{
+}
+
 void RenderEngine::ImageVisual::AddTo(ViewportRenderer ^ viewport)
 {
     privates->renderer = viewport->GetRenderer();

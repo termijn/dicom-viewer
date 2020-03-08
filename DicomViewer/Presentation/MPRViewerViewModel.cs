@@ -13,6 +13,12 @@ namespace DicomViewer.Presentation
 
         public MPRViewerViewModel()
         {
+            var root = new Space();
+            VoiSpace = new Space(root);
+            CameraAxial = new Camera(VoiSpace);
+            CameraCoronal = new Camera(VoiSpace);
+            CameraSagital = new Camera(VoiSpace);
+
             Tools = new ToolSelectorViewModel(this);
         }
 
@@ -20,9 +26,11 @@ namespace DicomViewer.Presentation
         public VisualsCollection VisualsCoronal { get; } = new VisualsCollection();
         public VisualsCollection VisualsSagital { get; } = new VisualsCollection();
 
-        public Camera CameraAxial { get; } = new Camera();
-        public Camera CameraCoronal { get; } = new Camera();
-        public Camera CameraSagital { get; } = new Camera();
+        public Space VoiSpace { get; }
+
+        public Camera CameraAxial { get; }
+        public Camera CameraCoronal { get; }
+        public Camera CameraSagital { get; }
         
         public IMouseInteractor InteractorLeft { get => _interactorLeft; set => SetProperty(ref _interactorLeft, value); }
         public IMouseInteractor InteractorRight { get => _interactorRight; set => SetProperty(ref _interactorRight, value); }
@@ -70,12 +78,12 @@ namespace DicomViewer.Presentation
 
         public void ActivateRotate()
         {
-            InteractorLeft = new RotateCameraInteractor();
+            InteractorLeft = new RotateInteractor(VoiSpace);
         }
 
         public void ActivateScroll()
         {
-            InteractorLeft = new CameraForwardInteractor();
+            InteractorLeft = new ForwardInteractor(VoiSpace);
         }
 
         public void ActivateWindowing()

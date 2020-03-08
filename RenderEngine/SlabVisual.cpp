@@ -1,12 +1,16 @@
 #include "SlabVisual.h"
 
 #include "vtkMemoryImageReader.h"
+#include <vtkCamera.h>
 #include <vtkSmartPointer.h>
 #include <vtkImageSlice.h>
 #include <vtkImageResliceMapper.h>
 #include <vtkPlane.h>
 #include <vtkImageProperty.h>
 #include <vtkMatrix4x4.h>
+#include <vtkPolyData.h>
+#include <vtkCellData.h>
+#include <vtkLine.h>
 #include "ImageSetReaderFactory.h"
 
 class RenderEngine::SlabVisualPrivates 
@@ -39,7 +43,6 @@ RenderEngine::SlabVisual::SlabVisual(Entities::ImageSet ^ images)
 
 	privates->imageSlice->SetProperty(privates->imageProperty);
 
-	//privates->mapper->SetSlabThickness(2);
 	privates->mapper->SetSlabTypeToMax();
 	privates->mapper->SliceFacesCameraOn();
 	privates->mapper->SliceAtFocalPointOn();
@@ -59,17 +62,23 @@ RenderEngine::SlabVisual::SlabVisual(Entities::ImageSet ^ images)
 		}
 	}
 	privates->imageSlice->SetUserMatrix(userMatrix);
+}
+
+void RenderEngine::SlabVisual::PreRender(ViewportRenderer^ viewport)
+{
 
 }
 
 void RenderEngine::SlabVisual::AddTo(ViewportRenderer ^ viewport)
 {
-	viewport->GetRenderer()->AddViewProp(privates->imageSlice);
+	auto renderer = viewport->GetRenderer();
+	renderer->AddViewProp(privates->imageSlice);
 }
 
 void RenderEngine::SlabVisual::RemoveFrom(ViewportRenderer ^ viewport)
 {
-	viewport->GetRenderer()->RemoveViewProp(privates->imageSlice);
+	auto renderer = viewport->GetRenderer();
+	renderer->RemoveViewProp(privates->imageSlice);
 }
 
 double RenderEngine::SlabVisual::GetWindowLevel()
@@ -86,6 +95,17 @@ void RenderEngine::SlabVisual::SetWindowing(double level, double width)
 {
 	privates->imageProperty->SetColorLevel(level);
 	privates->imageProperty->SetColorWindow(width);
+	Invalidated();
+}
+
+double RenderEngine::SlabVisual::GetSlabThickness()
+{
+	return privates->mapper->GetSlabThickness();
+}
+
+void RenderEngine::SlabVisual::SetSlabThickness(double thicknessInMM)
+{
+	privates->mapper->SetSlabThickness(thicknessInMM);
 	Invalidated();
 }
 

@@ -16,6 +16,8 @@ namespace RenderEngine
         !ImageVisual();
         ~ImageVisual();
 
+		virtual void PreRender(ViewportRenderer^ viewport);
+
         virtual void AddTo(ViewportRenderer ^ viewport);
         virtual void RemoveFrom(ViewportRenderer ^ viewport);
 

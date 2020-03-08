@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using System;
+using Entities;
 
 namespace Viewing
 {
@@ -8,10 +9,26 @@ namespace Viewing
         private Matrix _viewportPan = new Matrix();
         private double _zoom = 100;
 
+        public Camera(Space parentSpace)
+        {
+            Space = new Space(parentSpace);
+        }
+
+        public Space Space
+        {
+            get;
+        }
+
         public double Zoom
         {
             get => _zoom;
             set => SetProperty(ref _zoom, value);
+        }
+
+        public Coordinate CenterPan
+        {
+            get;
+            set;
         }
 
         public Matrix ViewportPan
@@ -20,10 +37,17 @@ namespace Viewing
             set => SetProperty(ref _viewportPan, value);
         }
 
-        public Matrix TransformationToWorld
+        public Matrix GetTransformation()
         {
-            get => _transformationToWorld;
-            set => SetProperty(ref _transformationToWorld, value);
+            var centering = new Matrix();
+            if (CenterPan != null)
+            {
+                var offset = CenterPan.In(Space);
+                offset.Z = 0;
+                centering = Matrix.Translation(offset);
+            }
+
+            return Space.GetTransformationToRoot() * ViewportPan * centering;
         }
     }
 }

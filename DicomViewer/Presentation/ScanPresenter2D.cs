@@ -18,9 +18,10 @@ namespace DicomViewer.Presentation
         public void Present(Scan scan)
         {
             var imageViewer = viewModel.ImageViewer;
-            var firstImage = scan.Volume.Slices[scan.Volume.Slices.Count / 2];
+            int centerImageIndex = scan.Volume.Slices.Count / 2;
+            var firstImage = scan.Volume.Slices[centerImageIndex];
             _imageVisual = new ImageVisual(scan.Volume);
-            _imageVisual.SetImageIndex(0);
+            _imageVisual.SetImageIndex(centerImageIndex);
             imageViewer.ImageVisual = _imageVisual;
             imageViewer.Visuals.Add(_imageVisual);
 

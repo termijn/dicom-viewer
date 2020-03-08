@@ -15,7 +15,7 @@ namespace Viewing
         public static readonly DependencyProperty VisualsProperty = 
             DependencyProperty.Register("Visuals", typeof(VisualsCollection), typeof(Viewport), new PropertyMetadata(new VisualsCollection(), OnVisualsChanged));
         public static readonly DependencyProperty CameraProperty =
-            DependencyProperty.Register("Camera", typeof(Camera), typeof(Viewport), new PropertyMetadata(new Camera(),  OnCameraChanged));
+            DependencyProperty.Register("Camera", typeof(Camera), typeof(Viewport), new PropertyMetadata(new Camera(new Space()),  OnCameraChanged));
         public static readonly DependencyProperty InteractorLeftProperty =
             DependencyProperty.Register("InteractorLeft", typeof(IMouseInteractor), typeof(Viewport), new PropertyMetadata(null));
         public static readonly DependencyProperty InteractorRightProperty =
@@ -29,9 +29,11 @@ namespace Viewing
 
         public Viewport()
         {
+            SnapsToDevicePixels = true;
+            UseLayoutRounding = true;
+            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
             ViewportRenderer = new ViewportRenderer();
-            
-            InteractorLeft = new RotateCameraInteractor();
+           
             InteractorRight = new ZoomInteractor();
 
             Unloaded += OnUnload;
@@ -55,7 +57,8 @@ namespace Viewing
             ViewportRenderer?.Dispose();
             ViewportRenderer = null;
 
-            Camera.PropertyChanged -= OnCameraTransformationChanged;
+            Camera.PropertyChanged -= OnCameraChanged;
+            Camera.Space.GetRoot().Changed -= OnCameraChanged;
         }
 
         public VisualsCollection Visuals
@@ -138,7 +141,15 @@ namespace Viewing
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            if (ActualWidth == 0 || ActualHeight == 0 || ViewportRenderer == null) { return; }
+            if (ActualWidth == 0 || ActualHeight == 0 || ViewportRenderer == null || _camera == null) { return; }
+
+            ViewportRenderer.SetZoom(_camera.Zoom);
+            ViewportRenderer.SetCameraTransformation(_camera.GetTransformation());
+
+            foreach (var visual in Visuals)
+            {
+                visual.PreRender(ViewportRenderer);
+            }
 
             int width = (int)ActualWidth;
             int height = (int)ActualHeight;
@@ -183,16 +194,20 @@ namespace Viewing
         private void OnCameraChanged(Camera camera)
         {
             _camera = camera;
-
-            camera.PropertyChanged += OnCameraTransformationChanged;           
-            OnCameraTransformationChanged(this, new PropertyChangedEventArgs(string.Empty));
+            camera.Space.GetRoot().Changed += OnCameraChanged;
+            OnCameraChanged();
+            camera.PropertyChanged += OnCameraChanged;
         }
 
-        private void OnCameraTransformationChanged(object sender, PropertyChangedEventArgs e)
+        private void OnCameraChanged(object sender, PropertyChangedEventArgs e)
         {
             if (ViewportRenderer == null) { return; }
-            ViewportRenderer.SetZoom(_camera.Zoom);
-            ViewportRenderer.SetCameraTransformation(_camera.TransformationToWorld * _camera.ViewportPan);
+            InvalidateVisual();
+        }
+
+        private void OnCameraChanged()
+        {
+            if (ViewportRenderer == null) { return; }
             InvalidateVisual();
         }
 

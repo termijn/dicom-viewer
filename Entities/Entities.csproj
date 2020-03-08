@@ -117,6 +117,7 @@
     <Compile Include="AngleAxis.cs" />
     <Compile Include="Bindable.cs" />
     <Compile Include="CollectionObserver.cs" />
+    <Compile Include="Coordinate.cs" />
     <Compile Include="Dimensions3.cs" />
     <Compile Include="Disposable.cs" />
     <Compile Include="Double.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="PropertySubscription.cs" />
     <Compile Include="Series.cs" />
     <Compile Include="SlicePositionComparer.cs" />
+    <Compile Include="Space.cs" />
     <Compile Include="Spacing2.cs" />
     <Compile Include="Spacing3.cs" />
     <Compile Include="Vector3.cs" />
