@@ -47,7 +47,7 @@ RenderEngine::SlabVisual::SlabVisual(Entities::ImageSet ^ images)
 	privates->mapper->SliceFacesCameraOn();
 	privates->mapper->SliceAtFocalPointOn();
 	privates->mapper->AutoAdjustImageQualityOff();
-	privates->mapper->BackgroundOff();
+	privates->mapper->SetSlabSampleFactor(1);
 
 	auto rotation = images->TransformationToPatient;
 	auto position = images->Slices[0]->PositionPatient;

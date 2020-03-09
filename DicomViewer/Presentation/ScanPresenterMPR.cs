@@ -18,7 +18,6 @@ namespace DicomViewer.Presentation
         public void Present(Scan scan)
         {
             double marginInPixels = 14;
-            double margin = marginInPixels * scan.Volume.VoxelSpacing.Y;
 
             var viewer = viewModel.MPRViewer;
 
@@ -37,15 +36,15 @@ namespace DicomViewer.Presentation
 
             viewer.VoiSpace.TransformationToParent = Matrix.Translation(scan.Volume.CenterInPatientSpace);
 
-            viewer.CameraAxial.Zoom = scan.Volume.VoxelSpacing.Y * scan.Volume.Dimensions.Y * 0.5 + margin;
+            viewer.CameraAxial.Zoom = scan.Volume.VoxelSpacing.Y * scan.Volume.Dimensions.Y * 0.5 + marginInPixels * scan.Volume.VoxelSpacing.Y;
             viewer.CameraAxial.ViewportPan = new Matrix();
 
             viewer.CameraSagital.Space.TransformationToParent = Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(0, 0, 1))  * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
-            viewer.CameraSagital.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + margin;
+            viewer.CameraSagital.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + marginInPixels * scan.Volume.VoxelSpacing.Z;
             viewer.CameraSagital.ViewportPan = new Matrix();
 
             viewer.CameraCoronal.Space.TransformationToParent = Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
-            viewer.CameraCoronal.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + margin;
+            viewer.CameraCoronal.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + marginInPixels * scan.Volume.VoxelSpacing.Z;
             viewer.CameraCoronal.ViewportPan = new Matrix();
 
             var root = viewer.CameraAxial.Space.GetRoot();
