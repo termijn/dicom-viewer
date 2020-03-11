@@ -136,7 +136,7 @@ namespace Viewing
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
             if (!IsLoaded) { return; }
-            Camera.Zoom = Math.Max(10, Camera.Zoom + e.Delta / -10);
+            Camera.Zoom = Math.Max(1, Camera.Zoom + e.Delta / -10);
         }
 
         protected override void OnRender(DrawingContext drawingContext)

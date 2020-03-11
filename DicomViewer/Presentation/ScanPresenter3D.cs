@@ -25,9 +25,11 @@ namespace DicomViewer.Presentation
             _visual = new VolumeVisual(scan.Volume);
             _volumeViewerViewModel.Visuals.Add(_visual);
 
+            double mmPerVoxel = scan.Volume.DimensionsInPatientSpace.Z / scan.Volume.NumberOfVoxelsInPatientSpace.Z;
             double marginInPixels = 48;
-            double margin = marginInPixels * scan.Volume.VoxelSpacing.Y;
-            _volumeViewerViewModel.Camera.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + margin;
+            double marginInmm = marginInPixels * mmPerVoxel;
+            
+            _volumeViewerViewModel.Camera.Zoom = scan.Volume.DimensionsInPatientSpace.Z * 0.5 + marginInmm;
             _volumeViewerViewModel.Camera.ViewportPan = new Matrix();
             _volumeViewerViewModel.Camera.Space.TransformationToParent = Matrix.Translation(scan.Volume.CenterInPatientSpace) * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
             _volumeViewerViewModel.Tools.IsRotateActive = true;

@@ -17,14 +17,15 @@ namespace DicomViewer.Presentation
 
         public void Present(Scan scan)
         {
-            double marginInPixels = 14;
+            double mmPerVoxel = scan.Volume.DimensionsInPatientSpace.Z / scan.Volume.NumberOfVoxelsInPatientSpace.Z;
+            double marginInPixels = 12;
+            double marginInmm = marginInPixels * mmPerVoxel;
 
             var viewer = viewModel.MPRViewer;
 
-            var axesVisual = new SlabAxesVisual(viewer.VoiSpace);
-            viewer.VisualsAxial.Add(axesVisual);
-            viewer.VisualsCoronal.Add(axesVisual);
-            viewer.VisualsSagital.Add(axesVisual);
+            viewer.VisualsAxial.Add(new SlabAxesVisual(viewer.VoiSpace, Plane.XY));
+            viewer.VisualsCoronal.Add(new SlabAxesVisual(viewer.VoiSpace, Plane.XZ));
+            viewer.VisualsSagital.Add(new SlabAxesVisual(viewer.VoiSpace, Plane.YZ));
 
             viewer.SlabAxial = new SlabVisual(scan.Volume);
             viewer.SlabSagital = new SlabVisual(scan.Volume);
@@ -36,15 +37,15 @@ namespace DicomViewer.Presentation
 
             viewer.VoiSpace.TransformationToParent = Matrix.Translation(scan.Volume.CenterInPatientSpace);
 
-            viewer.CameraAxial.Zoom = scan.Volume.VoxelSpacing.Y * scan.Volume.Dimensions.Y * 0.5 + marginInPixels * scan.Volume.VoxelSpacing.Y;
+            viewer.CameraAxial.Zoom = scan.Volume.DimensionsInPatientSpace.Y * 0.5 + marginInmm;
             viewer.CameraAxial.ViewportPan = new Matrix();
 
             viewer.CameraSagital.Space.TransformationToParent = Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(0, 0, 1))  * Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
-            viewer.CameraSagital.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + marginInPixels * scan.Volume.VoxelSpacing.Z;
+            viewer.CameraSagital.Zoom = scan.Volume.DimensionsInPatientSpace.Z * 0.5 + marginInmm;
             viewer.CameraSagital.ViewportPan = new Matrix();
 
             viewer.CameraCoronal.Space.TransformationToParent = Matrix.RotationAngleAxis(-Math.PI / 2, new Vector3(1, 0, 0));
-            viewer.CameraCoronal.Zoom = scan.Volume.VoxelSpacing.Z * scan.Volume.Dimensions.Z * 0.5 + marginInPixels * scan.Volume.VoxelSpacing.Z;
+            viewer.CameraCoronal.Zoom = scan.Volume.DimensionsInPatientSpace.Z * 0.5 + marginInmm;
             viewer.CameraCoronal.ViewportPan = new Matrix();
 
             var root = viewer.CameraAxial.Space.GetRoot();

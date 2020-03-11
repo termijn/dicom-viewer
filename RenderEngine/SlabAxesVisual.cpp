@@ -9,7 +9,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkPolyData.h>
 #include <vtkCellData.h>
-#include <vtkLine.h>
+#include <vtkPolyLine.h>
 
 using namespace RenderEngine;
 
@@ -18,52 +18,61 @@ class RenderEngine::SlabAxesVisualPrivates
 public:
     vtkSmartPointer<vtkPolyData> axesLinesPolyData;
     vtkSmartPointer<vtkPoints> axesPoints;
-    vtkSmartPointer<vtkLine> xAxisLine;
-    vtkSmartPointer<vtkLine> yAxisLine;
-    vtkSmartPointer<vtkLine> zAxisLine;
+    vtkSmartPointer<vtkPolyLine> xAxisLine;
+    vtkSmartPointer<vtkPolyLine> yAxisLine;
+    vtkSmartPointer<vtkPolyLine> zAxisLine;
     vtkSmartPointer<vtkCellArray> lines;
 
     vtkSmartPointer<vtkPolyDataMapper> axesLinesMapper;
     vtkSmartPointer<vtkActor> axesLinesActor;
 };
 
-SlabAxesVisual::SlabAxesVisual(Entities::Space^ space)
+vtkSmartPointer<vtkPolyLine> createBox(const int offset)
+{
+    auto polyLine = vtkSmartPointer<vtkPolyLine>::New();
+    polyLine->GetPointIds()->SetNumberOfIds(8);
+    for (int i = 0; i < 4; i++)
+    {
+        polyLine->GetPointIds()->SetId(i * 2, offset + i);
+        polyLine->GetPointIds()->SetId(i * 2 + 1, offset + (i + 1) % 4);
+    }
+    return polyLine;
+}
+
+SlabAxesVisual::SlabAxesVisual(Entities::Space^ space, Plane hiddenPlane)
 {
     this->privates = new SlabAxesVisualPrivates();
     this->space = space;
+    this->hiddenPlane = hiddenPlane;
 
     privates->axesLinesPolyData = vtkSmartPointer<vtkPolyData>::New();
 
     privates->axesPoints = vtkSmartPointer<vtkPoints>::New();
-    privates->axesPoints->InsertNextPoint(-100, 0, 0);
-    privates->axesPoints->InsertNextPoint(100, 0, 0);
 
-    privates->axesPoints->InsertNextPoint(0, -100, 0);
-    privates->axesPoints->InsertNextPoint(0, 100, 0);
+    const double halfSize = 250;
+    // X-Y plane
+    privates->axesPoints->InsertNextPoint(-halfSize, halfSize, 0);
+    privates->axesPoints->InsertNextPoint(halfSize, halfSize, 0);
+    privates->axesPoints->InsertNextPoint(halfSize, -halfSize, 0);
+    privates->axesPoints->InsertNextPoint(-halfSize, -halfSize, 0);
 
-    privates->axesPoints->InsertNextPoint(0, 0, -100);
-    privates->axesPoints->InsertNextPoint(0, 0, 100);
+    // Y-Z plane
+    privates->axesPoints->InsertNextPoint(0, -halfSize, halfSize);
+    privates->axesPoints->InsertNextPoint(0, halfSize, halfSize);
+    privates->axesPoints->InsertNextPoint(0, halfSize, -halfSize);
+    privates->axesPoints->InsertNextPoint(0, -halfSize, -halfSize);
+
+    // X-Z plane
+    privates->axesPoints->InsertNextPoint(-halfSize, 0, halfSize);
+    privates->axesPoints->InsertNextPoint(halfSize, 0, halfSize);
+    privates->axesPoints->InsertNextPoint(halfSize, 0, -halfSize);
+    privates->axesPoints->InsertNextPoint(-halfSize, 0, -halfSize);
 
     privates->axesLinesPolyData->SetPoints(privates->axesPoints);
 
-    privates->xAxisLine = vtkSmartPointer<vtkLine>::New();
-    privates->xAxisLine->GetPointIds()->SetId(0, 0);
-    privates->xAxisLine->GetPointIds()->SetId(1, 1);
-
-    privates->yAxisLine = vtkSmartPointer<vtkLine>::New();
-    privates->yAxisLine->GetPointIds()->SetId(0, 2);
-    privates->yAxisLine->GetPointIds()->SetId(1, 3);
-
-    privates->zAxisLine = vtkSmartPointer<vtkLine>::New();
-    privates->zAxisLine->GetPointIds()->SetId(0, 4);
-    privates->zAxisLine->GetPointIds()->SetId(1, 5);
-
-    privates->lines = vtkSmartPointer<vtkCellArray>::New();
-    privates->lines->InsertNextCell(privates->xAxisLine);
-    privates->lines->InsertNextCell(privates->yAxisLine);
-    privates->lines->InsertNextCell(privates->zAxisLine);
-
-    privates->axesLinesPolyData->SetLines(privates->lines);
+    privates->xAxisLine = createBox(0);
+    privates->yAxisLine = createBox(4);
+    privates->zAxisLine = createBox(8);
 
     unsigned char red[3] = { 211, 54, 130 };
     unsigned char green[3] = { 133, 153, 0 };
@@ -72,10 +81,27 @@ SlabAxesVisual::SlabAxesVisual(Entities::Space^ space)
     vtkSmartPointer<vtkUnsignedCharArray> colors =
         vtkSmartPointer<vtkUnsignedCharArray>::New();
     colors->SetNumberOfComponents(3);
-    colors->InsertNextTypedTuple(red);
-    colors->InsertNextTypedTuple(green);
-    colors->InsertNextTypedTuple(blue);
 
+    privates->lines = vtkSmartPointer<vtkCellArray>::New();
+    if (hiddenPlane != Plane::XY) 
+    {
+        colors->InsertNextTypedTuple(red);
+        privates->lines->InsertNextCell(privates->xAxisLine);
+    }
+    
+    if (hiddenPlane != Plane::YZ)
+    {
+        colors->InsertNextTypedTuple(green);
+        privates->lines->InsertNextCell(privates->yAxisLine);
+    }
+
+    if (hiddenPlane != Plane::XZ)
+    {
+        colors->InsertNextTypedTuple(blue);
+        privates->lines->InsertNextCell(privates->zAxisLine);
+    }
+
+    privates->axesLinesPolyData->SetLines(privates->lines);
     privates->axesLinesPolyData->GetCellData()->SetScalars(colors);
 
     privates->axesLinesMapper = vtkSmartPointer<vtkPolyDataMapper>::New();

@@ -50,7 +50,7 @@
             InteractorRight="{Binding InteractorRight}"
             />
 
-        <StackPanel Opacity="0.8" Margin="12,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.RowSpan="3" Grid.ColumnSpan="3">
+        <StackPanel Opacity="0.8" Margin="-60,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.RowSpan="3" Grid.ColumnSpan="3">
             <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the 3D rotation tool" IsChecked="{Binding Tools.IsRotateActive}">
                 <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </ToggleButton>            

@@ -15,6 +15,27 @@ namespace Entities
         /// z => height of a single slice in pixels
         /// </summary>
         public Dimensions3 Dimensions { get; set; } = new Dimensions3();
+
+        public Vector3 NumberOfVoxelsInPatientSpace
+        {
+            get
+            {
+                var voxelEdge = new Vector3(Dimensions.X, Dimensions.Y, Dimensions.Z);
+                var edgeInPatientSpace = voxelEdge * TransformationToPatient;
+                return new Vector3(Math.Abs(edgeInPatientSpace.X), Math.Abs(edgeInPatientSpace.Y), Math.Abs(edgeInPatientSpace.Z));
+            }
+        }
+
+        public Vector3 DimensionsInPatientSpace
+        {
+            get
+            {
+                var voxelEdge = new Vector3(Dimensions.X * VoxelSpacing.X, Dimensions.Y * VoxelSpacing.Y, Dimensions.Z * VoxelSpacing.Z);
+                var edgeInPatientSpace = voxelEdge * TransformationToPatient;
+                return new Vector3(Math.Abs(edgeInPatientSpace.X), Math.Abs(edgeInPatientSpace.Y), Math.Abs(edgeInPatientSpace.Z));
+            }
+        }
+
         public Matrix TransformationToPatient { get; set; } = new Matrix();
 
         public Vector3 CenterInVoxelSpace

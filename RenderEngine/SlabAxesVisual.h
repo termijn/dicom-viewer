@@ -6,10 +6,17 @@ namespace RenderEngine {
 	
 	class SlabAxesVisualPrivates;
 
+    public enum class Plane
+    {
+        XY,
+        YZ,
+        XZ
+    };
+
 	public ref class SlabAxesVisual : public IVisual
 	{
 	public:
-		SlabAxesVisual(Entities::Space^ space);
+		SlabAxesVisual(Entities::Space^ space, Plane hiddenPlane);
 		!SlabAxesVisual();
 		~SlabAxesVisual();
 
@@ -20,5 +27,6 @@ namespace RenderEngine {
 	private:
 		SlabAxesVisualPrivates* privates;	
 		Entities::Space^ space;
+        Plane hiddenPlane;
 	};
 }

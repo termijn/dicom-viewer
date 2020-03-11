@@ -16,58 +16,68 @@
         <local:MainViewModel />
     </Window.DataContext>
     <Grid>
-        <ContentControl Content="{Binding CurrentViewer}">
-            <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type local:ImageViewerViewModel}">
-                    <local:ImageViewer />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type local:VolumeViewerViewModel}">
-                    <local:VolumeViewer />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type local:MPRViewerViewModel}">
-                    <local:MPRViewer />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type local:StartViewModel}">
-                    <TextBlock FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Background="#D5D5D5" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="72">
+            <Grid>
+                <DockPanel Opacity="0.8" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="12,12,12,0">
+                    <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+                        <Button Width="48" Height="48" Command="{Binding LoadDatasetCommand}" ToolTip="Opens a DICOM folder">
+                            <iconPacks:PackIconMaterialDesign Kind="FolderOpen" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Button>
+                        <Button Width="48" Height="48"  Command="{Binding LoadFileCommand}" ToolTip="Opens a DICOM file">
+                            <iconPacks:PackIconMaterialDesign Kind="InsertDriveFile" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+
+                <UniformGrid Opacity="0.8" Rows="3" Columns="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="48" Height="144" Margin="12">
+                    <Button Margin="0,0,0,0" ToolTip="Views this series in 2D" Command="{Binding SwitchTo2DCommand}">
+                        <iconPacks:PackIconMaterialDesign Kind="Image" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Button>
+                    <Button Margin="0,0,0,0" ToolTip="Views this series in 3D" Command="{Binding SwitchTo3DCommand}">
+                        <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Button>
+                    <Button Margin="0,0,0,0" ToolTip="Views this series as a multi-planar-reconstruction (MPR)" Command="{Binding SwitchToMPRCommand}">
+                        <TextBlock FontSize="10">MPR</TextBlock>
+                    </Button>
+                </UniformGrid>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <ContentControl Content="{Binding CurrentViewer}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type local:ImageViewerViewModel}">
+                        <local:ImageViewer />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:VolumeViewerViewModel}">
+                        <local:VolumeViewer />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:MPRViewerViewModel}">
+                        <local:MPRViewer />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:StartViewModel}">
+                        <TextBlock FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Run>Drop a folder, dicomdir or a single image file</Run>
-                    </TextBlock>
-                </DataTemplate>
-            </ContentControl.Resources>
-        </ContentControl>
+                        </TextBlock>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
 
-        <DockPanel Opacity="0.8" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="12,12,12,0">
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                <Button Width="48" Height="48" Command="{Binding LoadDatasetCommand}" ToolTip="Opens a DICOM folder">
-                    <iconPacks:PackIconMaterialDesign Kind="FolderOpen" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                </Button>
-                <Button Width="48" Height="48"  Command="{Binding LoadFileCommand}" ToolTip="Opens a DICOM file">
-                    <iconPacks:PackIconMaterialDesign Kind="InsertDriveFile" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                </Button>
-            </StackPanel>
-        </DockPanel>
-
-        <Grid Margin="12" HorizontalAlignment="Center" VerticalAlignment="Top">
-            <TextBlock TextAlignment="Center" IsHitTestVisible="False">
+            <Grid Margin="12" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <TextBlock TextAlignment="Center" IsHitTestVisible="False">
                 <iconPacks:PackIconMaterialDesign Kind="PermIdentity" />
                 <Run FontSize="16" Text="{Binding Patient.FullReadableName, Mode=OneWay}" />
                 <LineBreak/>
                 <Run FontSize="14" Text="{Binding Patient.Id, Mode=OneWay}" />
-            </TextBlock>
-        </Grid>
+                </TextBlock>
+            </Grid>
 
-        <UniformGrid Opacity="0.8" Rows="3" Columns="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="48" Height="144" Margin="12">
-            <Button Margin="0,0,0,0" ToolTip="Views this series in 2D" Command="{Binding SwitchTo2DCommand}">
-                <iconPacks:PackIconMaterialDesign Kind="Image" VerticalAlignment="Center" HorizontalAlignment="Center" />
-            </Button>
-            <Button Margin="0,0,0,0" ToolTip="Views this series in 3D" Command="{Binding SwitchTo3DCommand}">
-                <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
-            </Button>
-            <Button Margin="0,0,0,0" ToolTip="Views this series as a multi-planar-reconstruction (MPR)" Command="{Binding SwitchToMPRCommand}">
-                <Label FontSize="10">MPR</Label>
-            </Button>
-        </UniformGrid>
-
-        <ComboBox 
+            <ComboBox 
             Width="150" 
             Margin="12"
             Height="48"
@@ -76,41 +86,42 @@
             SelectedItem="{Binding SelectedSeries}"
             HorizontalAlignment="Right"
             VerticalAlignment="Top">
-            <ComboBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" MaxWidth="660" />
-                </ItemsPanelTemplate>
-            </ComboBox.ItemsPanel>
-            <ComboBox.ItemTemplateSelector>
-                <local:ComboBoxItemTemplateSelector>
-                    <local:ComboBoxItemTemplateSelector.ItemTemplate>
-                        <DataTemplate DataType="{x:Type entities:Series}">
-                            <DockPanel LastChildFill="True" Margin="4">
-                                <TextBlock DockPanel.Dock="Top">
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" MaxWidth="660" />
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+                <ComboBox.ItemTemplateSelector>
+                    <local:ComboBoxItemTemplateSelector>
+                        <local:ComboBoxItemTemplateSelector.ItemTemplate>
+                            <DataTemplate DataType="{x:Type entities:Series}">
+                                <DockPanel LastChildFill="True" Margin="4">
+                                    <TextBlock DockPanel.Dock="Top">
                                     <Run>Series</Run>
                                     <Run Text="{Binding Number}" />
                                     <LineBreak/>
                                     <Run Text="{Binding NumberOfImages}" />
                                     <Run>Images</Run>
-                                </TextBlock>
-                                <Grid>
-                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">No thumbnail</TextBlock>
-                                    <Image Margin="0,4,0,0" Width="100" Height="100" Stretch="UniformToFill" Source="{Binding Thumbnail}"/>
-                                </Grid>
-                            </DockPanel>
-                        </DataTemplate>
-                    </local:ComboBoxItemTemplateSelector.ItemTemplate>
-                    <local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
-                        <DataTemplate DataType="{x:Type entities:Series}">
-                            <DockPanel LastChildFill="True">
-                                <TextBlock DockPanel.Dock="Left" FontSize="16">
+                                    </TextBlock>
+                                    <Grid>
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">No thumbnail</TextBlock>
+                                        <Image Margin="0,4,0,0" Width="100" Height="100" Stretch="UniformToFill" Source="{Binding Thumbnail}"/>
+                                    </Grid>
+                                </DockPanel>
+                            </DataTemplate>
+                        </local:ComboBoxItemTemplateSelector.ItemTemplate>
+                        <local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                            <DataTemplate DataType="{x:Type entities:Series}">
+                                <DockPanel LastChildFill="True">
+                                    <TextBlock DockPanel.Dock="Left" FontSize="16">
                                     <Run>Series</Run> <Run Text="{Binding Number}" />
-                                </TextBlock>
-                            </DockPanel>
-                        </DataTemplate>
-                    </local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
-                </local:ComboBoxItemTemplateSelector>
-            </ComboBox.ItemTemplateSelector>
-        </ComboBox>
+                                    </TextBlock>
+                                </DockPanel>
+                            </DataTemplate>
+                        </local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                    </local:ComboBoxItemTemplateSelector>
+                </ComboBox.ItemTemplateSelector>
+            </ComboBox>
+        </Grid>
     </Grid>
 </Controls:MetroWindow>

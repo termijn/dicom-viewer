@@ -17,7 +17,7 @@
             InteractorRight="{Binding InteractorRight}"
             />
 
-        <StackPanel Opacity="0.8" Margin="12,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+        <StackPanel Opacity="0.8" Margin="-60,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
             <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the image scroll tool" IsChecked="{Binding Tools.IsScrollActive}">
                 <iconPacks:PackIconMaterialDesign Kind="Pages" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </ToggleButton>
