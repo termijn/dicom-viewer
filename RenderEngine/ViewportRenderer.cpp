@@ -12,6 +12,7 @@ VTK_MODULE_INIT(vtkRenderingVolumeOpenGL2)
 #include <vtkSphereSource.h>
 #include <vtkWin32OutputWindow.h>
 #include <vtkCamera.h>
+#include <vtkCoordinate.h>
 
 #define VTI_FILETYPE 1
 #define MHA_FILETYPE 2
@@ -52,7 +53,7 @@ public:
         renderWindow = nullptr;
         renderer = nullptr;
     }
-
+  
     void SetSize(int width, int height)
     {
         renderWindow->SetSize(width, height);
@@ -128,6 +129,16 @@ RenderEngine::ViewportRenderer::!ViewportRenderer()
         delete impl;
         impl = nullptr;
     }
+}
+
+Vector3 ^ RenderEngine::ViewportRenderer::GetPositionInWorld(double x, double y)
+{
+    vtkCoordinate* coordinate = vtkCoordinate::New();
+    coordinate->SetCoordinateSystemToDisplay();
+    coordinate->SetValue(x, y);
+
+    double* world = coordinate->GetComputedWorldValue(impl->GetRenderer());
+    return gcnew Vector3(world[0], world[1], world[2]);
 }
 
 void RenderEngine::ViewportRenderer::Render(IntPtr pixelData)

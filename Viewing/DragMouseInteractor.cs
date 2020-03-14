@@ -27,6 +27,7 @@ namespace Viewing
 
         public void MouseUp(Point position, Viewport viewport)
         {
+            IsDragging = false;
             OnMouseUp(position, viewport);
         }
 

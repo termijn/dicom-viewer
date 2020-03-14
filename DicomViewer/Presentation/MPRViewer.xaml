@@ -8,6 +8,19 @@
              xmlns:iconPacks="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.MaterialDesign"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="SlabTriangle" TargetType="{x:Type Polygon}">
+            <Setter Property="Points" Value="0,0 28,28 0,28"/>
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Fill" Value="Transparent" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -19,41 +32,61 @@
             <RowDefinition Height="3" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <viewing:Viewport
+
+        <Grid
             Grid.Row="0"
-            Grid.Column="0"
-            Visuals="{Binding VisualsAxial}"
-            Camera="{Binding CameraAxial}"
-            InteractorLeft="{Binding InteractorLeft}"
-            InteractorRight="{Binding InteractorRight}"
-            />
+            Grid.Column="0">
+            <viewing:Viewport            
+                Visuals="{Binding VisualsAxial}"
+                Camera="{Binding CameraAxial}"
+                InteractorLeft="{Binding InteractorLeft}"
+                InteractorRight="{Binding InteractorRight}"
+                />
+
+            <Polygon
+                Style="{StaticResource SlabTriangle}"
+                Stroke="#D33682"
+                Fill="#D33682" />
+        </Grid>
 
         <GridSplitter Grid.Column="1" Grid.RowSpan="3" ShowsPreview="True" />
         <GridSplitter Grid.Column="0" Grid.Row="1" ShowsPreview="True"  />
-        
-        <viewing:Viewport
+
+        <Grid 
             Grid.Row="2"
-            Grid.Column="0"
+            Grid.Column="0">
+            <viewing:Viewport            
             Visuals="{Binding VisualsSagital}"
             Camera="{Binding CameraSagital}"
             InteractorLeft="{Binding InteractorLeft}"
             InteractorRight="{Binding InteractorRight}"
             />
+            <Polygon
+                Style="{StaticResource SlabTriangle}"
+                Stroke="#859900" 
+                Fill="#859900" />
+        </Grid>
 
-        <viewing:Viewport
-            Grid.Row="0"
-            Grid.Column="2"
-            Grid.RowSpan="3"
-            Visuals="{Binding VisualsCoronal}"
-            Camera="{Binding CameraCoronal}"
-            InteractorLeft="{Binding InteractorLeft}"
-            InteractorRight="{Binding InteractorRight}"
-            />
+        <Grid 
+            Grid.Row="0" 
+            Grid.Column="2" 
+            Grid.RowSpan="3">
+            <viewing:Viewport
+                Visuals="{Binding VisualsCoronal}"
+                Camera="{Binding CameraCoronal}"
+                InteractorLeft="{Binding InteractorLeft}"
+                InteractorRight="{Binding InteractorRight}"
+                />
+            <Polygon
+                Style="{StaticResource SlabTriangle}"
+                Stroke="#586E75"
+                Fill="#586E75"/>
+        </Grid>
 
         <StackPanel Opacity="0.8" Margin="-60,0,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.RowSpan="3" Grid.ColumnSpan="3">
             <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the 3D rotation tool" IsChecked="{Binding Tools.IsRotateActive}">
                 <iconPacks:PackIconMaterialDesign Kind="_3dRotation" VerticalAlignment="Center" HorizontalAlignment="Center" />
-            </ToggleButton>            
+            </ToggleButton>
             <ToggleButton Margin="0,0,0,0" Width="48" Height="48" ToolTip="Activates the image scroll tool" IsChecked="{Binding Tools.IsScrollActive}">
                 <iconPacks:PackIconMaterialDesign Kind="Pages" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </ToggleButton>

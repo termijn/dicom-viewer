@@ -71,19 +71,24 @@ namespace DicomViewer.Presentation
             SlabSagital?.SetWindowing(WindowLevel, WindowWidth);
         }
 
+        private MouseInteractorList CreateInteractorList(IMouseInteractor fallbackInteractor)
+        {
+            return new MouseInteractorList(new AxesInteractor(VoiSpace), fallbackInteractor);
+        }
+
         public void ActivatePan()
         {
-            InteractorLeft = new PanCameraInteractor();
+            InteractorLeft = CreateInteractorList(new PanCameraInteractor());
         }
 
         public void ActivateRotate()
         {
-            InteractorLeft = new RotateInteractor(VoiSpace);
+            InteractorLeft = CreateInteractorList(new RotateInteractor(VoiSpace));
         }
 
         public void ActivateScroll()
         {
-            InteractorLeft = new ForwardInteractor(VoiSpace);
+            InteractorLeft = CreateInteractorList(new ForwardInteractor(VoiSpace));
         }
 
         public void ActivateWindowing()
@@ -92,7 +97,7 @@ namespace DicomViewer.Presentation
 
         public void ActivateZoom()
         {
-            InteractorLeft = new ZoomInteractor();
+            InteractorLeft = CreateInteractorList(new ZoomInteractor());
         }
     }
 }

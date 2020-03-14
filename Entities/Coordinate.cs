@@ -1,5 +1,6 @@
 ﻿namespace Entities
 {
+
     public class Coordinate
     {
         private readonly Space _space;
@@ -15,6 +16,12 @@
         {
             var transform = _space.TransformationTo(targetSpace);
             return _vector * transform;
+        }
+
+        public Coordinate To(Space targetSpace)
+        {
+            var vectorInTargetSpace = In(targetSpace);
+            return new Coordinate(targetSpace, vectorInTargetSpace);
         }
     }
 }

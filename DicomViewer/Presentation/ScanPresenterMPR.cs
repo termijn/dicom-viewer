@@ -63,6 +63,8 @@ namespace DicomViewer.Presentation
 
             viewer.WindowLevel = centerSlice.WindowLevel;
             viewer.WindowWidth = centerSlice.WindowWidth;
+
+            viewer.Tools.IsScrollActive = true;
         }
 
         protected override void OnDispose()

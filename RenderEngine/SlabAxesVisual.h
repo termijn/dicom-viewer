@@ -10,7 +10,8 @@ namespace RenderEngine {
     {
         XY,
         YZ,
-        XZ
+        XZ,
+        None
     };
 
 	public ref class SlabAxesVisual : public IVisual
@@ -20,6 +21,10 @@ namespace RenderEngine {
 		!SlabAxesVisual();
 		~SlabAxesVisual();
 
+        bool Pick(double x, double y);
+		void Highlight();
+		void DeHighlight();
+
 		virtual void PreRender(ViewportRenderer^ viewport);
 		virtual void AddTo(ViewportRenderer ^ viewport);
 		virtual void RemoveFrom(ViewportRenderer ^ viewport);
@@ -28,5 +33,6 @@ namespace RenderEngine {
 		SlabAxesVisualPrivates* privates;	
 		Entities::Space^ space;
         Plane hiddenPlane;
+		bool isHighlighted;
 	};
 }

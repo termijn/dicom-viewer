@@ -118,6 +118,10 @@ namespace Viewing
             {
                 handled = InteractorRight.MouseMove(e.GetPosition(this), this);
             }
+            else if (InteractorLeft != null)
+            {
+                handled = InteractorLeft.MouseMove(e.GetPosition(this), this);
+            }
 
             if (handled)
             {

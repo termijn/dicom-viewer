@@ -22,6 +22,8 @@ namespace RenderEngine {
 		~ViewportRenderer();
 		!ViewportRenderer();
 
+        Vector3^ GetPositionInWorld(double x, double y);
+
         void Render(IntPtr pixelData);
         void SetSize(int width, int height);
         void SetZoom(double factor);        

@@ -23,6 +23,10 @@ namespace Entities
             }
         }
 
+        public Direction AxisX => new Direction(this, new Vector3(1, 0, 0));
+        public Direction AxisY => new Direction(this, new Vector3(0, 1, 0));
+        public Direction AxisZ => new Direction(this, new Vector3(0, 0, 1));
+
         public event Action Changed;
 
         public Matrix TransformationToParent
