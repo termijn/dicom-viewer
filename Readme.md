@@ -8,6 +8,7 @@
   * Flat style minimalistic user interface
   * 2D image viewing
   * 3D shaded volume rendering
+  * Multi planar reformat (MPR)
   * Scroll/Rotate/Zoom/Pan/Windowing mouse interaction
   * Series pictorial index
   * Load from DicomDir
